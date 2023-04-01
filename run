@@ -1,0 +1,5 @@
+clear
+nasm -f bin -o build/boot.bin src/boot.asm
+#dd if=build/boot.bin of=/dev/sda
+qemu-system-i386 -hda build/boot.bin
+sendkey ctrl-alt-delete
