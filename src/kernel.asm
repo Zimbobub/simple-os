@@ -16,13 +16,8 @@ kernel:
     
     call clearScreen    ; clears bios message and sets video mode
 
-    ; set colour
-    ; http://www.ctyme.com/intr/rb-0101.htm
-    mov ah, 0bh
-    xor bh, bh
     mov bl, 01h
-    int 10h
-
+    call setColor
 
 
     ; mov al, 'T'
@@ -114,39 +109,50 @@ main:
             ; mov [si], bl
 
             ; print newline as well
-            mov al, 0dh
-            call putc
+            ; mov al, 0dh
+            ; call putc
 
             
             
-            ; find command and run it
-            ; cmpStr takes DX as arg for how many chars to compare
-            ; but DX already holds our string length so no need to modify
-            ; FOR NOW ALL COMMANDS ARE IN KERNEL
-            ; EVENTUALLY ONCE FILE SYSTEM IS WORKING MOVE THEM ALL TO DISCRETE FILES
+        ; find command and run it
+        ; cmpStr takes DX as arg for how many chars to compare
+        ; but DX already holds our string length so no need to modify
+        ; FOR NOW ALL COMMANDS ARE IN KERNEL
+        ; EVENTUALLY ONCE FILE SYSTEM IS WORKING MOVE THEM ALL TO DISCRETE FILES
 
-            cmdHelpTest:
-                mov di, cmdHelpStr
-                call cmpStr
-                je cmdHelp
+        
 
-            cmdExitTest:
-                mov di, cmdExit
-                call cmpStr
-                je cmdExit
+        cmdHelpTest:
+            mov di, cmdHelpStr
+            call cmpStr
+            je cmdHelp
+
+        cmdExitTest:
+            mov di, cmdExitStr
+            call cmpStr
+            je cmdExit
+
+        cmdRebootTest:
+            mov di, cmdRebootStr
+            call cmpStr
+            je cmdReboot
             
 
+        ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
+        ; mov [si], bl
 
+        ; mov bl, dl ; test where SI points to by writing to it
+        ; add bl, '0'
+        ; mov [si], bl
 
-
+        noCommandFound:
             ; if no command was found, display message and jump to start
             ; 'Command "${command}" could not be found'
             push si
-
             mov si, CommandNotFound1
             call puts
-
             pop si
+
             call puts
 
             mov si, CommandNotFound2
@@ -157,55 +163,100 @@ main:
 
 
 
-; FUNCTIONS
 
+; --FUNCTIONS--
+
+
+;
 ; compare string
 ; params:
 ; SI: pointer to string1
 ; DI: pointer to string2
 ; DX: chars to check
+; returns:
+; carry flag set if strings match
+;
 cmpStr:
+    ; save modified regs
     push ax
-    push bx
     push dx
     push si
     push di
     cmpChar:
-        mov ax, [si]
-        mov bx, [di]
+        mov al, [si]    ; need to move [si] to a register as we cannot compare two bytes from memory
+        cmp al, [di]
+        jne strNotEqual
+        ; increment pointers & decrement countdown
+        inc si
+        inc di
+        dec dx
+        ; jump if we havent counted to zero yet
+        or dx, dx
+        jnz cmpChar
+        ; otherwise continue to exit
+    strIsEqual:
+        stc     ; set carry flag
+        jmp cmpStrExit
+    strNotEqual:
+        clc     ; clear carry flag
 
+    cmpStrExit:
+        ; restore regs
+        pop di
+        pop si
+        pop dx
+        pop ax
+        ret
 
 
 
 ; COMMANDS:
 
+
 ; help
 ; lists all commands
 cmdHelp:
-    mov al, 'A'
-    call putc   ; debug stuff
     ; eventually allow it to look up help page for specific commands
     mov si, helpMsg
     call puts
     jmp main
 
 
+
 ; exit
-; halts cpu
+; clears screen & halts cpu
 cmdExit:
+    call clearScreen
+    mov bl, 00h
+    call setColor
     cli
     hlt
+    ; no need to jump back to main
+
+
+; reboot
+; restarts the os
+cmdReboot:
+    jmp 0FFFFh:0        ; jump to beginning of BIOS, should reboot
+
+
+; echo
+; implement later once args are working
+cmdEcho:
+    
+
 
 
 ; kernel data
 Loaded: db 'Kernel loaded', ENDL, 'Type "help" for a list of commands to get started', ENDL, 0
 CommandNotFound1: db 'Command "', 0
-CommandNotFound2: db '" could not be found', ENDL 0
+CommandNotFound2: db '" could not be found', ENDL, 0
 
 
 ; commands
 cmdHelpStr: db 'help', 0
 cmdExitStr: db 'exit', 0
+cmdRebootStr: db 'reboot', 0
 
 
 ; command data

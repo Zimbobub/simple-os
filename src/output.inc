@@ -31,17 +31,17 @@ puts:
     push si
 
     ; label to fetch next char of string
-    nextChar:
+    .nextChar:
         mov al, [si]    ; read from memory address pointed to by SI (stack pointer)
         inc si          ; increment stack pointer
 
         or al, al       ; check if AL is 0 (end of string)
-        jz exitFunc     ; if so jump to end
+        jz .exit     ; if so jump to end
 
         call putc       ; else print char
-        jmp nextChar    ; and loop over
+        jmp .nextChar    ; and loop over
     
-    exitFunc:
+    .exit:
         ; restore regs
         pop si
         pop ax
@@ -58,9 +58,9 @@ puts:
 ; count in cx
 ; 80 in cx = entire row
 printTimes:
-    printTimesLoop:
+    .loop:
         call putc
-        loop printTimesLoop
+        loop .loop
     ret
 
 
@@ -77,3 +77,19 @@ clearScreen:
     pop ax
     ret
 
+
+; http://www.ctyme.com/intr/rb-0101.htm
+; takes bl as arg of what color to set screen to
+setColor:
+    push ax
+    push bx
+
+    mov ah, 0bh
+    xor bh, bh
+    ; mov bl, 01h
+    int 10h
+    
+    pop bx
+    pop ax
+    ret
+    

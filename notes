@@ -32,16 +32,4 @@ boot process:
 
 
 on enter command:
-    check if app is built into kernel (smaller apps or those that rely on kernel functions)
-    // eventually add aliases as well (check /alias file)
-
-    open /apps/ to memory
-    search for entered command in /apps/
-
-    if found, save the sector #
-    close /apps/
-    open that file from the sector #
-
-    jump to that file at line 0
-    on exit, jump to specific label in kernel
-    close file
+    

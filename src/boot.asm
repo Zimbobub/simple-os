@@ -6,8 +6,28 @@ jmp _start
 
 
 _start:
+    ; show loading message
     mov si, Loading
     call puts
+
+
+    ; setup data segments
+    mov ax, 0           ; can't set ds/es directly
+    mov ds, ax
+    mov es, ax
+    
+    ; setup stack
+    mov ss, ax
+    mov sp, 0x7C00              ; stack grows downwards from where we are loaded in memory
+
+    ; some BIOSes might start us at 07C0:0000 instead of 0000:7C00, 
+    ; make sure we are in the expected location
+    push es
+    push word .after
+    retf
+
+
+.after:
 
     ; read kernel to memory:
     ; LBA adress
@@ -30,9 +50,6 @@ _start:
     ; as the kernel is loaded right after the bootloader in memory
     ; we can jump to the end of the file to jump to the kernel
     jmp kernelStart
-    
-    ; call KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET
-
 
 
 ; if we somehow escape main reboot so we dont start executing random functions
@@ -91,17 +108,17 @@ puts:
     push ax
 
     ; label to fetch next char of string
-    nextChar:
+    .nextChar:
         mov al, [si]    ; read from memory address pointed to by SI (stack pointer)
         inc si          ; increment stack pointer
 
         or al, al       ; check if AL is 0 (end of string)
-        jz exitFunc     ; if so jump to end
+        jz .exit     ; if so jump to end
 
         call putc       ; else print char
-        jmp nextChar    ; and loop over
+        jmp .nextChar    ; and loop over
     
-    exitFunc:
+    .exit:
         ; restore ax
         pop ax
         ret
@@ -273,8 +290,8 @@ Loading: db 'Loading kernel...', ENDL, 0
 RebootMessage: db 'Press any key to reboot', 0
 
 ; Error messages
-ErrorFloppy1: db 'err: failed to load kernel from floppy disk after 3 attempts', ENDL, 0
-ErrorFloppy2: db 'err: failed to reset floppy disk', ENDL, 0
+ErrorFloppy1: db 'boot error: failed to load kernel from floppy disk after 3 attempts', ENDL, 0
+ErrorFloppy2: db 'boot error: failed to reset floppy disk', ENDL, 0
 
 ; load at 7c00 as for some reason we can only read from index 0
 KERNEL_LOAD_SEGMENT     equ 0000h
