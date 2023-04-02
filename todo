@@ -5,6 +5,8 @@ store which ones are open in 8 bit num
 DONE: in build process, mountable other files
 /apps/ will contain all the commands we can run
 
+NEXT: ALLOW ARGUMENTS IN COMMANDS
+
 in kernel:
 function to get file location by name
 function to open file to memory in first avaliable slot
