@@ -4,133 +4,35 @@ bits 16
 
 jmp _start
 
-%include "src/output.inc"
-; %include "src/disk.inc"
 
 _start:
     mov si, Loading
     call puts
 
-    ; read extended bootloader
-    ; location on disk
-    mov ax, 512     ; LBA adress
-
+    ; read kernel to memory:
+    ; LBA adress
+    mov ax, 1024
+    ; sectors to read 
     xor ch, ch
-    mov cl, 1       ; sectors to read
-
+    mov cl, 5       ; --CHANGE WHENEVER KERNEL GROWS TO KERNEL SIZE IN SECTORS + 1--
+    ; drive num
     xor dh, dh
-    mov dl, 80h     ; drive num
+    mov dl, 80h
 
-
-    ; location in memory
+    ; location in memory to write to
     mov bx, KERNEL_LOAD_SEGMENT
     mov es, bx
     mov bx, KERNEL_LOAD_OFFSET
 
+    ; read kernel
     call diskRead
 
-
-    call bootTest
+    ; as the kernel is loaded right after the bootloader in memory
+    ; we can jump to the end of the file to jump to the kernel
+    jmp kernelStart
     
     ; call KERNEL_LOAD_SEGMENT:KERNEL_LOAD_OFFSET
 
-
-    call clearScreen    ; clears bios message and sets video mode
-
-    ; set colour
-    ; http://www.ctyme.com/intr/rb-0101.htm
-    ; mov ah, 0bh
-    ; xor bh, bh
-    ; mov bl, 01h
-    ; int 10h
-
-
-
-
-
-    ; print hello world
-    mov si, Welcome ; move pointer to string into stack pointer
-    call puts
-
-; loop that lets us run a command
-; dx stores length of command buffer
-; each char is pushed to stack
-main:
-
-    ; eventually create a pwd function that is called here
-
-    mov al, '>'
-    call putc
-
-
-    xor si, si      ; reset si
-    xor dx, dx      ; reset dx
-
-    ; get keyboard input & print it
-    getChar:
-        ; get char
-        xor ah, ah ; reset ah to 0
-        int 16h
-
-        ; loop again if no char
-        or al, al
-        jz getChar
-
-        ; print char
-        call putc
-
-
-
-        ; special key detectors
-
-        ; backspace
-        cmp al, 08h
-        je backspaceKey
-
-        ; enter
-        cmp al, 0dh
-        je enterKey
-
-
-        ; regular key handler
-        ; push the ascii code to stack so we have the command string when enter is pressed
-        mov [si], ax
-        inc si
-        inc dx              ; increment length of command buffer
-        jmp getChar
-
-
-        ; special key handlers
-
-        ; when we putc backspace, it only moves the cursor backward
-        backspaceKey:
-            mov al, ' '     ; write a space in the next spot
-            call putc       ; backspace just moved us backward so this removes the prev char
-            mov al, 08h
-            call putc       ; putc backspace again to move our cursor back
-            dec si          ; decrement command pointer
-            dec dx          ; decrement length of command buffer
-            jmp getChar
-
-
-        ; if the char is enter, also move to next line
-        enterKey:
-            ; add a newline as enter key only does carriage return
-            mov al, 0ah
-            call putc
-
-            ; command buffer stuff & print command out for debugging purposes
-            ; move si to start of command
-            xor ah, ah
-            mov [si], ax    ; move 0 to last char
-            sub si, dx      ; subtract length from pointer so it points to start
-            call puts
-            ; newline as well
-            mov al, 0dh
-            call putc
-            
-
-            jmp main
 
 
 ; if we somehow escape main reboot so we dont start executing random functions
@@ -140,6 +42,69 @@ jmp reboot
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; print char
+; assume ascii value is in reg AL
+putc:
+    ; save modified regs
+    push ax
+    push bx
+
+    mov ah, 0eh
+    mov bh, 00h
+    mov bl, 07h
+    ; call interrupt
+    int 10h
+
+    ; restore regs
+    pop bx
+    pop ax
+
+    ret
+
+
+
+
+
+; loops over putc to print a string
+; assume that string starting pointer is in register SI
+puts:
+    ; save ax
+    push ax
+
+    ; label to fetch next char of string
+    nextChar:
+        mov al, [si]    ; read from memory address pointed to by SI (stack pointer)
+        inc si          ; increment stack pointer
+
+        or al, al       ; check if AL is 0 (end of string)
+        jz exitFunc     ; if so jump to end
+
+        call putc       ; else print char
+        jmp nextChar    ; and loop over
+    
+    exitFunc:
+        ; restore ax
+        pop ax
+        ret
 
 
 
@@ -216,7 +181,7 @@ diskRead:
     push di
 
     push cx                             ; temporarily save CL (number of sectors to read)
-    call LBAtoCHS                     ; compute CHS
+    call LBAtoCHS                       ; compute CHS
     pop ax                              ; AL = number of sectors to read
     
     mov ah, 02h
@@ -277,7 +242,7 @@ diskReset:
 ; error messages
 
 floppyError:
-    mov si, ErrorFloppy
+    mov si, ErrorFloppy1
     jmp throwError
 
 floppyError2:
@@ -304,16 +269,16 @@ reboot:
 
 
 ; data
-Loading: db 'Loading...', ENDL, 0
-Welcome: db 'Welcome to the most useful OS ever', ENDL, 0
-RebootMessage: db 'Press key to reboot', 0
+Loading: db 'Loading kernel...', ENDL, 0
+RebootMessage: db 'Press any key to reboot', 0
 
 ; Error messages
-ErrorFloppy: db 'err: disk read failed after 3 tries', ENDL, 0
-ErrorFloppy2: db 'err: disk reset failed', ENDL, 0
+ErrorFloppy1: db 'err: failed to load kernel from floppy disk after 3 attempts', ENDL, 0
+ErrorFloppy2: db 'err: failed to reset floppy disk', ENDL, 0
 
-KERNEL_LOAD_SEGMENT     equ 0x2000
-KERNEL_LOAD_OFFSET      equ 0
+; load at 7c00 as for some reason we can only read from index 0
+KERNEL_LOAD_SEGMENT     equ 0000h
+KERNEL_LOAD_OFFSET      equ 7c00h
 
 
 ; fill rest of boot sector with 0s & note the sector as bootable
@@ -323,4 +288,6 @@ dw 0xAA55
 
 
 ; non bootsector part of bootloader
-%include "src/bootExtended.inc"
+; %include "src/bootExtended.inc"
+
+kernelStart:

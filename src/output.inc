@@ -26,8 +26,9 @@ putc:
 ; loops over putc to print a string
 ; assume that string starting pointer is in register SI
 puts:
-    ; save ax
+    ; save regs
     push ax
+    push si
 
     ; label to fetch next char of string
     nextChar:
@@ -41,7 +42,8 @@ puts:
         jmp nextChar    ; and loop over
     
     exitFunc:
-        ; restore ax
+        ; restore regs
+        pop si
         pop ax
         ret
 

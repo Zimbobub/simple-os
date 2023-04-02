@@ -2,7 +2,7 @@
 (first is always curren working directory)
 store which ones are open in 8 bit num
 
-in build process, mountable other files
+DONE: in build process, mountable other files
 /apps/ will contain all the commands we can run
 
 in kernel:
