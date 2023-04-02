@@ -211,38 +211,10 @@ cmpStr:
 
 
 ; COMMANDS:
-
-
-; help
-; lists all commands
-cmdHelp:
-    ; eventually allow it to look up help page for specific commands
-    mov si, helpMsg
-    call puts
-    jmp main
-
-
-
-; exit
-; clears screen & halts cpu
-cmdExit:
-    call clearScreen
-    mov bl, 00h
-    call setColor
-    cli
-    hlt
-    ; no need to jump back to main
-
-
-; reboot
-; restarts the os
-cmdReboot:
-    jmp 0FFFFh:0        ; jump to beginning of BIOS, should reboot
-
-
-; echo
-; implement later once args are working
-cmdEcho:
+cmdHelp:   %include "src/apps/help.asm"
+cmdExit:   %include "src/apps/exit.asm"
+cmdReboot: %include "src/apps/reboot.asm"
+cmdEcho:   %include "src/apps/echo.asm"
     
 
 
