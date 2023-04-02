@@ -4,6 +4,9 @@ org 0x7c00
 bits 16
 %define ENDL 0x0D, 0x0A
 
+; %define KERNEL_SIGNATURE 0x5A4D
+%define KERNEL_SIGNATURE 'ZM'
+
 
 jmp _start
 
@@ -26,13 +29,13 @@ _start:
     ; some BIOSes might start us at 07C0:0000 instead of 0000:7C00, 
     ; make sure we are in the expected location
     push es
-    push word .after
-    retf
+    push word .after    ; push location of rest of bootloader to stack
+    retf                ; returning jumps to the popped address
 
 
 .after:
 
-    ; read kernel to memory:
+readKernel:
     ; LBA adress
     mov ax, 1024
     ; sectors to read 
@@ -50,12 +53,25 @@ _start:
     ; read kernel
     call diskRead
 
-    ; as the kernel is loaded right after the bootloader in memory
-    ; we can jump to the end of the file to jump to the kernel
-    jmp kernelStart
 
 
-; if we somehow escape main reboot so we dont start executing random functions
+checkKernelSignature:
+    mov bx, KERNEL_LOAD_OFFSET
+
+    add bx, 514                 ; add 512 to shift over 1 segment, add 2 to skip the initial jump instruction
+    mov ax, [bx]                ; move the signature from loaded segment to cx
+
+    cmp ax, KERNEL_SIGNATURE    ; compare segment's signature to expected
+    jne kernelSignatureError
+
+
+
+; as the kernel is loaded right after the bootloader in memory
+; we can jump to the end of the file to jump to the kernel
+jmp kernelStart
+
+
+; if we somehow escape main, reboot so we dont start executing random functions
 jmp reboot
 
 
@@ -261,6 +277,10 @@ diskReset:
 
 ; error messages
 
+kernelSignatureError:
+    mov si, ErrorSignature
+    jmp throwError
+
 floppyError:
     mov si, ErrorFloppy1
     jmp throwError
@@ -293,6 +313,7 @@ Loading: db 'Loading kernel...', ENDL, 0
 RebootMessage: db 'Press any key to reboot', 0
 
 ; Error messages
+ErrorSignature: db 'boot error: incorrect kernel signature', ENDL, 0
 ErrorFloppy1: db 'boot error: failed to load kernel from floppy disk after 3 attempts', ENDL, 0
 ErrorFloppy2: db 'boot error: failed to reset floppy disk', ENDL, 0
 

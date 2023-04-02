@@ -1,8 +1,9 @@
 org 0x7e00
 bits 16
 
-jmp kernel
-db 0xAA  ; signature to show that kernel was loaded
+jmp kernel  ; jump past signature and include statements to main func
+; dw 0x5A4D   ; signature to show that kernel is loaded correctly
+dw 'ZM'   ; signature to show that kernel is loaded correctly
 
 
 %define ENDL 0x0D, 0x0A
@@ -157,10 +158,14 @@ main:
 
 
 ; COMMANDS:
-cmdHelp:   %include "src/apps/help.asm"
-cmdExit:   %include "src/apps/exit.asm"
-cmdReboot: %include "src/apps/reboot.asm"
-cmdEcho:   %include "src/apps/echo.asm"
+cmdHelp:
+%include "src/apps/help.asm"
+cmdExit:
+%include "src/apps/exit.asm"
+cmdReboot:
+%include "src/apps/reboot.asm"
+cmdEcho:
+%include "src/apps/echo.asm"
     
 
 
