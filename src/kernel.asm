@@ -8,8 +8,9 @@ db 0xAA  ; signature to show that kernel was loaded
 %define ENDL 0x0D, 0x0A
 
 
-
-%include "src/output.inc"
+%include "src/lib/stdin.inc"
+%include "src/lib/stdout.inc"
+%include "src/lib/string.inc"
 
 
 kernel:
@@ -19,11 +20,7 @@ kernel:
     mov bl, 01h
     call setColor
 
-
-    ; mov al, 'T'
-    ; call putc
-
-    ; print hello world
+    ; print welcome message
     mov si, Loaded ; move pointer to string into source indicator
     call puts
 
@@ -43,21 +40,10 @@ main:
 
     ; get keyboard input & print it
     getChar:
-        ; get char
-        xor ah, ah ; reset ah to 0
-        int 16h
+        call waitForKey ; wait for a keypress
+        call putc       ; print that key
 
-        ; loop again if no char
-        or al, al
-        jz getChar
-
-        ; print char
-        call putc
-
-
-
-        ; special key detectors
-
+        ; special keys
         ; backspace
         cmp al, 08h
         je backspaceKey
@@ -167,46 +153,6 @@ main:
 ; --FUNCTIONS--
 
 
-;
-; compare string
-; params:
-; SI: pointer to string1
-; DI: pointer to string2
-; DX: chars to check
-; returns:
-; carry flag set if strings match
-;
-cmpStr:
-    ; save modified regs
-    push ax
-    push dx
-    push si
-    push di
-    cmpChar:
-        mov al, [si]    ; need to move [si] to a register as we cannot compare two bytes from memory
-        cmp al, [di]
-        jne strNotEqual
-        ; increment pointers & decrement countdown
-        inc si
-        inc di
-        dec dx
-        ; jump if we havent counted to zero yet
-        or dx, dx
-        jnz cmpChar
-        ; otherwise continue to exit
-    strIsEqual:
-        stc     ; set carry flag
-        jmp cmpStrExit
-    strNotEqual:
-        clc     ; clear carry flag
-
-    cmpStrExit:
-        ; restore regs
-        pop di
-        pop si
-        pop dx
-        pop ax
-        ret
 
 
 
