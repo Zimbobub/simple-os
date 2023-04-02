@@ -1,10 +1,9 @@
+; definition of KERNEL_SIZE is put here at compile time
+; KERNEL_SIZE = size of kernel in segments + 1 (for bootsegment)
 org 0x7c00
 bits 16
 %define ENDL 0x0D, 0x0A
 
-; --CHANGE WHENEVER KERNEL.BIN SIZE CHANGES--
-; add one to size of kernel in 512 byte segments
-%define KERNEL_SIZE 5
 
 jmp _start
 

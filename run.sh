@@ -1,13 +1,13 @@
-clear
+# clear
 
-mkdir -p build
+# mkdir -p build
 
 
-#BUILD
-nasm -f bin -o build/boot.bin src/boot.asm
-nasm -f bin -o build/kernel.bin src/kernel.asm
+# #BUILD
+# nasm -f bin -o build/boot.bin src/boot.asm
+# nasm -f bin -o build/kernel.bin src/kernel.asm
 
-cat build/boot.bin build/kernel.bin > build/os.bin
+# cat build/boot.bin build/kernel.bin > build/os.bin
 
 #dd if=build/os.bin of=/dev/sda
 
