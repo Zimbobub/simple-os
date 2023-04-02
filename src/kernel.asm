@@ -260,7 +260,7 @@ cmdRebootStr: db 'reboot', 0
 
 
 ; command data
-helpMsg: db 'LIST ALL THE COMMANDS HERE ONCE THERE ARE SOME', ENDL, 0
+helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, ENDL, 0
 
 
 ; gives us 2kb of space to write both kernel and programs

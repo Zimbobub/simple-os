@@ -2,6 +2,10 @@ org 0x7c00
 bits 16
 %define ENDL 0x0D, 0x0A
 
+; --CHANGE WHENEVER KERNEL.BIN SIZE CHANGES--
+; add one to size of kernel in 512 byte segments
+%define KERNEL_SIZE 5
+
 jmp _start
 
 
@@ -34,7 +38,7 @@ _start:
     mov ax, 1024
     ; sectors to read 
     xor ch, ch
-    mov cl, 5       ; --CHANGE WHENEVER KERNEL GROWS TO KERNEL SIZE IN SECTORS + 1--
+    mov cl, KERNEL_SIZE
     ; drive num
     xor dh, dh
     mov dl, 80h
