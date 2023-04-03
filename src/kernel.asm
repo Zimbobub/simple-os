@@ -1,21 +1,23 @@
 org 0x7e00
 bits 16
 
-jmp kernel  ; jump past signature and include statements to main func
-; dw 0x5A4D   ; signature to show that kernel is loaded correctly
-dw 'ZM'   ; signature to show that kernel is loaded correctly
-
-
 %define ENDL 0x0D, 0x0A
 
 
+; CODE BEGIN
+jmp signatureSkip           ; jump past signature, must be a short jump, (2 bytes) for signature reader to work
+dw 'ZM'                     ;  signature to show that kernel is loaded correctly, 0x5A4D
+signatureSkip: jmp kernel   ; jump past dependencies
+
+
+; DEPENDENCIES
 %include "src/lib/stdin.inc"
 %include "src/lib/stdout.inc"
 %include "src/lib/string.inc"
 
 
 kernel:
-    
+    dw 'AB'
     call clearScreen    ; clears bios message and sets video mode
 
     mov bl, 01h
@@ -120,7 +122,7 @@ main:
         
 
         ; find command and run it
-        ; cmpStr takes DX as arg for how many chars to compare
+        ; cmpCmd takes DX as arg for how many chars to compare
         ; but DX already holds our string length so no need to modify
         ; FOR NOW ALL COMMANDS ARE IN KERNEL
         ; EVENTUALLY ONCE FILE SYSTEM IS WORKING MOVE THEM ALL TO DISCRETE FILES
@@ -146,6 +148,16 @@ main:
             mov di, cmdEchoStr
             call cmpCmd
             jc cmdEcho
+
+        cmdClearTest:
+            mov di, cmdClearStr
+            call cmpCmd
+            jc cmdClear
+
+        cmdColorTest:
+            mov di, cmdColorStr
+            call cmpCmd
+            jc cmdColor
             
 
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
@@ -193,8 +205,10 @@ cmdReboot:
 %include "src/apps/reboot.asm"
 cmdEcho:
 %include "src/apps/echo.asm"
-    
-
+cmdClear:
+%include "src/apps/clear.asm"
+cmdColor:
+%include "src/apps/color.asm"
 
 
 ; kernel data
@@ -208,10 +222,12 @@ cmdHelpStr: db 'help', 0
 cmdExitStr: db 'exit', 0
 cmdRebootStr: db 'reboot', 0
 cmdEchoStr: db 'echo', 0
+cmdClearStr: db 'clear', 0
+cmdColorStr: db 'color', 0
 
 
 ; command data
-helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, '    echo   : prints what you input it', ENDL,ENDL, 0
+helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, '    echo   : prints what you input it', ENDL, '    clear  : clears the screen', ENDL, '    color  : sets colors', ENDL, ENDL, 0
 
 
 ; gives us 2kb of space to write both kernel and programs

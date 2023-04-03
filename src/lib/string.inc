@@ -1,6 +1,64 @@
 
 ;
 ; compare string
+; compares until hits a null char in either string
+; params:
+; SI: pointer to string1
+; DI: pointer to string2
+; returns:
+; carry flag set if strings match
+;
+; NOTE: we check if either is null first, so we are checking if one string starts with the other
+; (eg: "test" == "testing")
+;
+cmpStr:
+    ; save modified regs
+    push ax
+    push si
+    push di
+    cmpChar:
+        ; check if either pointer points to null char
+        mov al, [di]
+        or al, al
+        jz .isEqual
+
+        mov al, [si]    ; need to move [si] to a register as we cannot compare two bytes from memory
+        or al, al
+        jz .isEqual
+
+        ; compare they are equal
+        cmp al, [di]
+        jne .notEqual
+
+        ; increment pointers
+        inc si
+        inc di
+
+        ; otherwise continue to exit
+    .isEqual:
+        stc     ; set carry flag
+        jmp .exit
+    .notEqual:
+        clc     ; clear carry flag
+
+    .exit:
+        ; restore regs
+        pop di
+        pop si
+        pop ax
+        ret
+
+
+
+
+
+
+
+
+
+;
+; compare string of length
+; continues for set length
 ; params:
 ; SI: pointer to string1
 ; DI: pointer to string2
@@ -8,31 +66,31 @@
 ; returns:
 ; carry flag set if strings match
 ;
-cmpStr:
+cmpStrLen:
     ; save modified regs
     push ax
     push dx
     push si
     push di
-    cmpChar:
+    .cmpChar:
         mov al, [si]    ; need to move [si] to a register as we cannot compare two bytes from memory
         cmp al, [di]
-        jne strNotEqual
+        jne .notEqual
         ; increment pointers & decrement countdown
         inc si
         inc di
         dec dx
         ; jump if we havent counted to zero yet
         or dx, dx
-        jnz cmpChar
+        jnz .cmpChar
         ; otherwise continue to exit
-    strIsEqual:
+    .isEqual:
         stc     ; set carry flag
-        jmp cmpStrExit
-    strNotEqual:
+        jmp .exit
+    .notEqual:
         clc     ; clear carry flag
 
-    cmpStrExit:
+    .exit:
         ; restore regs
         pop di
         pop si
