@@ -1,1 +1,0 @@
-xxd -pe build/os.bin

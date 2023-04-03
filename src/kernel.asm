@@ -42,7 +42,6 @@ main:
     ; get keyboard input & print it
     getChar:
         call waitForKey ; wait for a keypress
-        call putc       ; print that key
 
         ; special keys
         ; backspace
@@ -53,19 +52,27 @@ main:
         cmp al, 0dh
         je enterKey
 
-
-        ; regular key handler
-        ; push the ascii code to buffer so we have the command string when enter is pressed
-        mov [si], ax
-        inc si
-        inc dx              ; increment length of command buffer
-        jmp getChar
+        defaultKey:
+            ; regular key handler
+            ; push the ascii code to buffer so we have the command string when enter is pressed
+            call putc   ; print the char
+            mov [si], ax
+            inc si
+            inc dx              ; increment length of command buffer
+            jmp getChar
 
 
         ; special key handlers
 
-        ; when we putc backspace, it only moves the cursor backward
         backspaceKey:
+            ; if we are at the start of the command, dont do anything
+            or dx, dx
+            jz getChar
+
+            ; when we putc backspace, it only moves the cursor backward
+            call putc   ; move cursor backward
+
+
             mov al, ' '     ; write a space in the next spot
             call putc       ; backspace just moved us backward so this removes the prev char
             mov al, 08h
@@ -77,6 +84,7 @@ main:
 
         ; if the char is enter, also move to next line
         enterKey:
+            call putc   ; move to next line
             ; add a newline as enter key only does carriage return
             mov al, 0ah
             call putc
@@ -106,9 +114,6 @@ main:
         ; but DX already holds our string length so no need to modify
         ; FOR NOW ALL COMMANDS ARE IN KERNEL
         ; EVENTUALLY ONCE FILE SYSTEM IS WORKING MOVE THEM ALL TO DISCRETE FILES
-
-        
-
         cmdHelpTest:
             mov di, cmdHelpStr
             call cmpStr
@@ -133,7 +138,11 @@ main:
         ; mov [si], bl
 
         noCommandFound:
-            ; if no command was found, display message and jump to start
+            ; do not display cmd not found msg if command length is 0 (it is always incremented to hold null character)
+            cmp dx, 1
+            je main
+
+            ; else, if no command was found, display message and jump to start
             ; 'Command "${command}" could not be found'
             push si
             mov si, CommandNotFound1
