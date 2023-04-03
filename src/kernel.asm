@@ -109,25 +109,43 @@ main:
 
             
             
+
+        ; get command without arguments
+        ; SI = command buffer
+        ; DI = where to put arg-less command
+        ; put it after the command buffer
+        ; mov di, si
+        ; add di, dx      ; end of command buffer
+        ; call getCmd
+        
+
         ; find command and run it
         ; cmpStr takes DX as arg for how many chars to compare
         ; but DX already holds our string length so no need to modify
         ; FOR NOW ALL COMMANDS ARE IN KERNEL
         ; EVENTUALLY ONCE FILE SYSTEM IS WORKING MOVE THEM ALL TO DISCRETE FILES
+        ; 
+        ; DI HOLDS COMMAND BY ITSELF
+        ; SI HOLDS COMMAND WITH ARGS
         cmdHelpTest:
             mov di, cmdHelpStr
-            call cmpStr
-            je cmdHelp
+            call cmpCmd
+            jc cmdHelp
 
         cmdExitTest:
             mov di, cmdExitStr
-            call cmpStr
-            je cmdExit
+            call cmpCmd
+            jc cmdExit
 
         cmdRebootTest:
             mov di, cmdRebootStr
-            call cmpStr
-            je cmdReboot
+            call cmpCmd
+            jc cmdReboot
+
+        cmdEchoTest:
+            mov di, cmdEchoStr
+            call cmpCmd
+            jc cmdEcho
             
 
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
@@ -189,10 +207,11 @@ CommandNotFound2: db '" could not be found', ENDL, 0
 cmdHelpStr: db 'help', 0
 cmdExitStr: db 'exit', 0
 cmdRebootStr: db 'reboot', 0
+cmdEchoStr: db 'echo', 0
 
 
 ; command data
-helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, ENDL, 0
+helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, '    echo   : prints what you input it', ENDL,ENDL, 0
 
 
 ; gives us 2kb of space to write both kernel and programs
