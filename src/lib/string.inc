@@ -16,25 +16,24 @@ cmpStr:
     push ax
     push si
     push di
-    cmpChar:
-        ; check if either pointer points to null char
+    .cmpChar:
         mov al, [di]
-        or al, al
-        jz .isEqual
+        cmp al, 0       ; check if we hit a null char, if so, exit with success
+        je .isEqual
 
-        mov al, [si]    ; need to move [si] to a register as we cannot compare two bytes from memory
-        or al, al
-        jz .isEqual
+        ; need to move [si] to a register as we cannot compare two bytes from memory
+        mov al, [si]
+        cmp al, 0       ; check if we hit a null char, if so, exit with success
+        je .isEqual
 
-        ; compare they are equal
+        ; compare the two chars
         cmp al, [di]
         jne .notEqual
 
-        ; increment pointers
+        ; increment pointers & decrement countdown
         inc si
         inc di
-
-        ; otherwise continue to exit
+        ; otherwise continue to exit with success
     .isEqual:
         stc     ; set carry flag
         jmp .exit
@@ -47,7 +46,6 @@ cmpStr:
         pop si
         pop ax
         ret
-
 
 
 
@@ -163,53 +161,5 @@ cmpCmd:
 
 
 
-
-
-; ;
-; ; get command
-; ; returns the command entered, without the arguments
-; ; params:
-; ; SI: pointer to command
-; ; DI: pointer to where to put command
-; ;
-; getCmd:
-;     ; save regs
-;     push ax
-;     push si
-;     push di
-
-;     .loop:
-;         ; read char from memory
-;         mov ax, [si]
-
-;         ; exit if null char
-;         or ax, ax       
-;         jz .end
-
-;         ; exit if spacebar
-;         cmp ax, ' '     
-;         je .end
-
-;         ; otehrwise, push it to new string
-;         mov [di], ax
-
-;         ; increment pointers
-;         inc si
-;         inc di
-
-;         ; loop again
-;         jmp .loop
-
-;     .end:
-;         ; add null char to end
-;         inc di
-;         xor ax, ax
-;         mov [di], ax
-        
-;         ; restore regs & exit
-;         pop di
-;         pop si
-;         pop ax
-;         ret
 
 

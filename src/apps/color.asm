@@ -149,7 +149,7 @@ exit:
     jmp main
 
 ; data
-errorMsg: db 'Error: incorrect color', ENDL, 0
+errorMsg: db 'Error: incorrect color, try "color list" for a list of avaliable colors', ENDL, 0
 
 list: db 'list', 0
 
