@@ -1,18 +1,15 @@
 disk sectors:
 
 0: bootsector
-1: bootloader continued (sorta like kernel)
-2: /root/ folder
-3...127: fs
+2-5: kernel
+6: settings & sector list (tells us stuff like if it is free)
+7: /root/ folder
+8...127: fs
 
 
 
-fs:
-64kb
-128 sectors (512 bytes/sector)
-
-
-everything is a file
+FS:
+64kb, 128 sectors (512 bytes/sector)
 
 folders can hold up to 64 sub directories or files
 each entry is 8 bytes:
@@ -20,10 +17,17 @@ each entry is 8 bytes:
     second byte for sector #
     last 6 for file name
 
+FLAGS:
+    isDir
+    isExe
+    system (will make modifying it show a warning)
+    ???
+    ???
+    ???
+    ???
+    ???
 
-
-
-boot process:
+boot seqence:
     display loading message
     clear screen & set vga mode
     load other sectors of bootloader/kernel

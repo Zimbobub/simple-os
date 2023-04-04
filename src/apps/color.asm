@@ -22,6 +22,12 @@ push di
 add si, 6       ; increment si by 6 to skip over 'color ' in the command, straight to the arg
 sub dx, 6       ; decrement buffer length by same amount
 
+
+; check if user typed arg 'list'
+mov di, list
+call cmpCmd
+jc list1
+
 ; check each color
 colorChecks:
 .black:
@@ -65,6 +71,47 @@ colorChecks:
 
 
 
+list1:
+    mov si, black
+    call .next
+    mov si, blue
+    call .next
+    mov si, lime
+    call .next
+    mov si, cyan
+    call .next
+    mov si, red
+    call .next
+    mov si, pink
+    call .next
+    mov si, yellow
+    call .next
+    mov si, white
+    call .next
+
+    jmp exit
+
+    .next:
+        push ax
+
+        ; indent the color name by 2 spaces
+        mov al, ' '
+        call putc
+        call putc
+
+        ; print the color name
+        call puts
+
+        ; print newline
+        mov al, 0Ah
+        call putc
+        mov al, 0Dh
+        call putc
+
+        pop ax
+        ret
+
+
 ; HANDLERS:
 black1:
     mov bl, 00h
@@ -103,6 +150,8 @@ exit:
 
 ; data
 errorMsg: db 'Error: incorrect color', ENDL, 0
+
+list: db 'list', 0
 
 ; colors
 black: db 'black', 0
