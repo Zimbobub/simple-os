@@ -6,13 +6,15 @@ const mountRoot = path.join(__dirname, 'mnt');
 // path we are currently mounting
 let directoryPath = path.join(__dirname, 'mnt');
 
-// fs starts at sector 7
+// fs starts at sector 6
 // increment with every file/folder we mount
-let sectorNum = 7;
+let sectorNum = 6;
 
 
 
-mountFolder('mnt', 7);      // for simplicity & one less edge case, the root folder's parent dir is itself
+mountFolder('mnt', 6);      // for simplicity & one less edge case, the root folder's parent dir is itself
+
+
 
 
 
@@ -49,18 +51,13 @@ function mountFolder(name, sector, parentDirSector) {
     }
 
 
+
     // pad it to 512 bytes, and check it doesnt go above
     directoryData = Buffer.concat([directoryData], 512);
     if (directoryData.length > 512) { throw new Error(`Error: ${file} is too big!`) }
 
     // write binary to /build/mount/${sectorNum}
     fs.writeFileSync(path.join(__dirname, 'build/mount', mySector.toString()), directoryData);
-
-
-
-    // log stuff, temp
-    // console.log("----------------");
-    // console.log(`/${name}/`, directoryData);
 
 
 
@@ -87,9 +84,13 @@ function mountFolder(name, sector, parentDirSector) {
 
 
 
+
+
 function createFileEntry(name, dir, sector) {
+    const entrySize = 16;
+
     // check file name length isnt too big
-    if (name.length > 6) throw new Error(`Error: file "${name}"'s name is too long!`);
+    if (name.length > (entrySize - 2)) throw new Error(`Error: file "${name}"'s name is too long!`);
 
     // flags
     let flags = 0b00000000;
@@ -98,16 +99,18 @@ function createFileEntry(name, dir, sector) {
     // create array
     let arr = [flags, sector]
     for (const char of name) { arr.push(char.charCodeAt()); }
-    // create buffer, and pad it to 8 bytes if it is not already
+    // create buffer, and pad it to 16 bytes if it is not already
     // from: https://stackoverflow.com/questions/69114003/pad-nodejs-buffer-to-32-bytes-after-creation-from-string
     let buffer = Buffer.from(arr);
-    buffer = Buffer.concat([buffer], 8);
+    buffer = Buffer.concat([buffer], entrySize);
 
     // console.log(arr);
     // console.log(`${name}: `.padStart(6), buffer);
 
     return buffer;
 }
+
+
 
 
 

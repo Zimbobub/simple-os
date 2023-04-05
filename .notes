@@ -1,21 +1,21 @@
 disk sectors:
 
 0: bootsector
-2-5: kernel
-6: settings & sector list (tells us stuff like if it is free)
-7: /root/ folder
-8...127: fs
+1-4: kernel
+5: settings & sector list (tells us stuff like if it is free)
+6: /root/ folder
+7...127: fs
 
 
 
 FS:
 64kb, 128 sectors (512 bytes/sector)
 
-folders can hold up to 64 sub directories or files
-each entry is 8 bytes:
+folders can hold up to 31 sub directories or files (first one for parent folder)
+each entry is 16 bytes:
     first byte for flags (is directory, is executable...)
     second byte for sector #
-    last 6 for file name
+    last 14 for file name
 
 FLAGS:
     isDir
