@@ -16,12 +16,14 @@ mountFolder('mnt', 7);      // for simplicity & one less edge case, the root fol
 
 
 
-function mountFolder(name, parentDirSector) {
-    console.log(`Mounting dir  at sector ${sectorNum}:`.padEnd(27), path.relative(__dirname, directoryPath));
+
+
+function mountFolder(name, sector, parentDirSector) {
+    console.log(`Mounting dir  at sector ${sector}:`.padEnd(27), path.relative(__dirname, directoryPath));
 
 
     // save sectorNum before it is modified
-    const mySector = sectorNum;
+    const mySector = sector;
 
     // create empty buffer
     let directoryData = Buffer.alloc(0);
@@ -38,40 +40,47 @@ function mountFolder(name, parentDirSector) {
         let stats = fs.statSync(path.join(directoryPath, fileList[i]))
         directoryData = Buffer.concat([directoryData, createFileEntry(fileList[i], stats.isDirectory(), sectorNum)]); 6
 
-        // save the already calucated 'isDirectory' for later
-        fileList[i] = { name: fileList[i], isDir: stats.isDirectory(), sector: sectorNum };
+        // save the already calucated 'isDirectory' for later & other stuff
+        fileList[i] = {
+            name: fileList[i],
+            isDir: stats.isDirectory(),
+            sector: sectorNum
+        };
     }
 
+
     // pad it to 512 bytes, and check it doesnt go above
-    directoryData = Buffer.concat([directoryData], 512);    // pad it to 512 bytes
+    directoryData = Buffer.concat([directoryData], 512);
     if (directoryData.length > 512) { throw new Error(`Error: ${file} is too big!`) }
 
     // write binary to /build/mount/${sectorNum}
     fs.writeFileSync(path.join(__dirname, 'build/mount', mySector.toString()), directoryData);
 
+
+
     // log stuff, temp
     // console.log("----------------");
     // console.log(`/${name}/`, directoryData);
 
+
+
     // recursively call this function or mountFile() for each entry
     fileList.forEach(file => {
-        // increment sectorNumber
-        sectorNum++;
         // check if it is a directory or not
         if (file.isDir) {
 
             // push the new dir to the directory path
             directoryPath = path.join(directoryPath, file.name);
-            mountFolder(file.name, mySector);
+            // recursively call function
+            mountFolder(file.name, file.sector, mySector);
             // pop that directory from the path once we return
             directoryPath = path.dirname(directoryPath);
         } else {
 
-            mountFile(file.name);
+            mountFile(file.name, file.sector);
         }
     });
 
-    // return
 }
 
 
@@ -104,8 +113,8 @@ function createFileEntry(name, dir, sector) {
 
 
 
-function mountFile(name) {
-    console.log(`Mounting file at sector ${sectorNum}:`.padEnd(27), path.relative(__dirname, path.join(directoryPath, name)));
+function mountFile(name, sector) {
+    console.log(`Mounting file at sector ${sector}:`.padEnd(27), path.relative(__dirname, path.join(directoryPath, name)));
 
     // read the file
     let fileData = fs.readFileSync(path.join(directoryPath, name))
@@ -120,7 +129,7 @@ function mountFile(name) {
     if (fileData.length > 512) { throw new Error(`Error: ${name} is too big!`) }
 
     // write it to build mount folder
-    fs.writeFileSync(path.join(__dirname, 'build/mount', sectorNum.toString()), fileData);
+    fs.writeFileSync(path.join(__dirname, 'build/mount', sector.toString()), fileData);
 }
 
 
