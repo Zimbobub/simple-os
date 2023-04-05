@@ -1,67 +1,127 @@
 const fs = require('fs');
 const path = require('path');
 
-const directoryPath = path.join(__dirname, 'mnt');
+// path to root of mount
+const mountRoot = path.join(__dirname, 'mnt');
+// path we are currently mounting
+let directoryPath = path.join(__dirname, 'mnt');
 
 // fs starts at sector 7
 // increment with every file/folder we mount
 let sectorNum = 7;
 
 
-createFileEntry({ name: "test", dir: true });
 
-// mountFolder('mnt', 7);      // for simplicity & one less edge case, the root folder's parent dir is itself
+mountFolder('mnt', 7);      // for simplicity & one less edge case, the root folder's parent dir is itself
+
+
 
 function mountFolder(name, parentDirSector) {
-    // array of subdirectories and files
-    let children = [];
+    console.log(`Mounting dir  at sector ${sectorNum}:`.padEnd(27), path.relative(__dirname, directoryPath));
 
-    // read folder & create array of entries for each subdir and file
-    fs.readdir(directoryPath, function (err, files) {
-        // handling error
-        if (err) return console.log('Unable to scan directory: ' + err);
 
-        // listing all files using forEach
-        files.forEach(function (file) {
-            // check if a directory or file
-            fs.stat(path.join(directoryPath, file), (err, stats) => {
-                children.push({ name: file, dir: stats.isDirectory() });
-            });
-        });
+    // save sectorNum before it is modified
+    const mySector = sectorNum;
+
+    // create empty buffer
+    let directoryData = Buffer.alloc(0);
+    // parent folder entry
+    directoryData = Buffer.concat([directoryData, createFileEntry('..', true, parentDirSector)]);
+
+    // read folder
+    const fileList = fs.readdirSync(directoryPath);
+
+    // have to use regular for loop cos we modify the items
+    for (let i = 0; i < fileList.length; i++) {
+        // create fileEntryBuffer of 8 bytes
+        sectorNum++;
+        let stats = fs.statSync(path.join(directoryPath, fileList[i]))
+        directoryData = Buffer.concat([directoryData, createFileEntry(fileList[i], stats.isDirectory(), sectorNum)]); 6
+
+        // save the already calucated 'isDirectory' for later
+        fileList[i] = { name: fileList[i], isDir: stats.isDirectory(), sector: sectorNum };
+    }
+
+    // pad it to 512 bytes, and check it doesnt go above
+    directoryData = Buffer.concat([directoryData], 512);    // pad it to 512 bytes
+    if (directoryData.length > 512) { throw new Error(`Error: ${file} is too big!`) }
+
+    // write binary to /build/mount/${sectorNum}
+    fs.writeFileSync(path.join(__dirname, 'build/mount', mySector.toString()), directoryData);
+
+    // log stuff, temp
+    // console.log("----------------");
+    // console.log(`/${name}/`, directoryData);
+
+    // recursively call this function or mountFile() for each entry
+    fileList.forEach(file => {
+        // increment sectorNumber
+        sectorNum++;
+        // check if it is a directory or not
+        if (file.isDir) {
+
+            // push the new dir to the directory path
+            directoryPath = path.join(directoryPath, file.name);
+            mountFolder(file.name, mySector);
+            // pop that directory from the path once we return
+            directoryPath = path.dirname(directoryPath);
+        } else {
+
+            mountFile(file.name);
+        }
     });
 
-    // compile that array to a binary
-    // pad it to 512 bytes, and check it doesnt go above
-    // write binary to /build/mount/${sectorNum}
-    // increment sectorNum
-    // recursively call this function or mountFile() for each entry
     // return
 }
 
-function createFileEntry(file) {
+
+
+
+
+function createFileEntry(name, dir, sector) {
     // check file name length isnt too big
-    if (file.name.length > 6) throw new Error(`Error: file "${file.name}"'s name is too long!`);
+    if (name.length > 6) throw new Error(`Error: file "${name}"'s name is too long!`);
 
     // flags
     let flags = 0b00000000;
-    if (file.dir == true) flags += 0b10000000;  // add 'isDir' flag if the file is a directory
-    // sector pointer
-    let sectorPtr = 0xFF;
+    if (dir == true) flags += 0b10000000;  // add 'isDir' flag if the file is a directory
 
     // create array
-    let arr = [flags, sectorPtr]
-    for (const char of file.name) { arr.push(char.charCodeAt()); }
+    let arr = [flags, sector]
+    for (const char of name) { arr.push(char.charCodeAt()); }
     // create buffer, and pad it to 8 bytes if it is not already
     // from: https://stackoverflow.com/questions/69114003/pad-nodejs-buffer-to-32-bytes-after-creation-from-string
     let buffer = Buffer.from(arr);
     buffer = Buffer.concat([buffer], 8);
 
     // console.log(arr);
-    // console.log(buffer);
+    // console.log(`${name}: `.padStart(6), buffer);
 
     return buffer;
 }
 
-function mountFile(name) {
 
+
+
+
+function mountFile(name) {
+    console.log(`Mounting file at sector ${sectorNum}:`.padEnd(27), path.relative(__dirname, path.join(directoryPath, name)));
+
+    // read the file
+    let fileData = fs.readFileSync(path.join(directoryPath, name))
+
+    // convert it to a buffer
+    fileData = Buffer.from(fileData);
+
+    // pad it to 512 bytes
+    fileData = Buffer.concat([fileData], 512);
+
+    // check it isnt too big
+    if (fileData.length > 512) { throw new Error(`Error: ${name} is too big!`) }
+
+    // write it to build mount folder
+    fs.writeFileSync(path.join(__dirname, 'build/mount', sectorNum.toString()), fileData);
 }
+
+
+
