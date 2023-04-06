@@ -4,12 +4,12 @@ disk sectors:
 1-4: kernel
 5: settings & sector list (tells us stuff like if it is free)
 6: /root/ folder
-7...127: fs
+7...126: fs
 
 
 
 FS:
-64kb, 128 sectors (512 bytes/sector)
+just under 64kb, 127 sectors (512 bytes/sector)
 
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:
@@ -19,7 +19,7 @@ each entry is 16 bytes:
 
 FLAGS:
     isDir
-    isExe
+    isExec
     system (will make modifying it show a warning)
     ???
     ???
