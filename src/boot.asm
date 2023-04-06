@@ -40,7 +40,7 @@ readKernel:
     mov ax, 1024
     ; sectors to read 
     xor ch, ch
-    mov cl, KERNEL_SIZE
+    mov cl, 127     ; read 127 sectors (max we can, entire os will fit here cos im lazy)
     ; drive num
     xor dh, dh
     mov dl, 80h
