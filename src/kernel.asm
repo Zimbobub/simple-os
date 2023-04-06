@@ -14,6 +14,7 @@ signatureSkip: jmp kernel   ; jump past dependencies
 %include "src/lib/stdin.inc"
 %include "src/lib/stdout.inc"
 %include "src/lib/string.inc"
+%include "src/lib/fs.inc"
 
 
 kernel:
