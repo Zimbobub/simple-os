@@ -49,8 +49,9 @@ nasm -f bin -o build/kernel.bin src/kernel.asm
 
 
 # create system prefs/info sector (empty for now)
-echo "Creating system info sector..."
-dd if=/dev/zero of=build/info.bin bs=1 count=512 &> /dev/null    # silence output
+# this is now built in mount.js
+# echo "Creating system info sector..."
+# dd if=/dev/zero of=build/info.bin bs=1 count=512 &> /dev/null    # silence output
 
 
 

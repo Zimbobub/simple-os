@@ -37,6 +37,27 @@ boot seqence:
 
 
 
+sysinfo sector:
+512 bytes
+
+bytes 0-5: 
+
+bytes 6-126: fs info
+    bits:
+        0: is used
+        1: is executable
+        2: is protected ( all system files are protected, reads/writes require password )
+        3: folder entries #
+        4: folder entries #
+        5: folder entries #
+        6: folder entries #
+        7: folder entries #
+    the file is a folder if the number of entries > 0
+    to separate the num of entries, use 'and (REG), 0b00011111'
+
+bytes 127-511:
+
+
 
 
 to get a hexdump:
