@@ -3,13 +3,13 @@ disk sectors:
 0: bootsector
 1-4: kernel
 5: settings & sector list (tells us stuff like if it is free)
-6: /root/ folder
-7...126: fs
+6...: file system
 
 
 
 FS:
 just under 64kb, 127 sectors (512 bytes/sector)
+6 reserved sectors, 121 left for FS
 
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:
@@ -47,6 +47,35 @@ bytes 6-126: fs info
     to separate the num of entries, use 'and (REG), 0b00011111'
 
 bytes 127-511:
+
+
+
+
+
+
+
+
+RAM ALLOCATIONS:
+usable memory:
+0x0500 - 0x7BFF (30464 bytes / 29.75kib): kernel memory
+    0x0500 - 0x050F ( 16 bytes): name of current directory (names are 15 bytes but null at the end ensures puts doesnt break)
+    0x0510 - 0x051F ( 16 bytes): info on current dir (sector, is protected, number of entries)
+    0x0520 - 0x05FF (224 bytes): command buffer (user input)
+    0x0600 - 0x7BFF (30208 bytes): idk
+
+
+
+0x7C00 - 0x179FF (65024 bytes / 63.5kib): disk
+    0x7C00 - 0x7DFF  (  512 bytes  /    1 sectors): bootsector
+    0x7E00 - 0x85FF  ( 2048 bytes  /    4 sectors): kernel
+    0x8600 - 0x87FF  (  512 bytes  /    1 sectors): osinfo
+    0x8800 - 0x179FF (61952 bytes  /  121 sectors): file system
+
+
+
+0x17A00 - 0x7FFFF (427520 bytes / 417.5kib):
+
+
 
 
 

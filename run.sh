@@ -7,12 +7,15 @@ qemu-system-i386 -hda build/os.bin -monitor stdio
 
 
 <<comment
+dump (pretty much) all memory (BIOS debugging ig)
+pmemsave 0 0xFFFFF "./.memdump"
+
 to read code segment (bootloader first 512, kernel next 2048)
-memsave 31744 2560 "./.memdump"
+pmemsave 0x7C00 2560 "./.memdump"
 
 to read code, sysinfo & fs
-memsave 31744 65024 "./.memdump"
+pmemsave 0x7C00 0xFDFF "./.memdump"
 
 to read data segment 1
-memsave 1280 30464 "./.memdump"
+pmemsave 1280 30464 "./.memdump"
 comment
