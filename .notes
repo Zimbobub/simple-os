@@ -14,18 +14,9 @@ just under 64kb, 127 sectors (512 bytes/sector)
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:
     first byte for flags (is directory, is executable...)
-    second byte for sector #
-    last 14 for file name
+    other 15 for file name
+flags can be looked up in osinfo sector
 
-FLAGS:
-    isDir
-    isExec
-    system (will make modifying it show a warning)
-    ???
-    ???
-    ???
-    ???
-    ???
 
 boot seqence:
     display loading message

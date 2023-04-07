@@ -36,7 +36,7 @@ function mountFolder(name, sector, parentDirSector) {
     // create empty buffer
     let directoryData = Buffer.alloc(0);
     // parent folder entry
-    directoryData = Buffer.concat([directoryData, createFileEntry('..', true, parentDirSector)]);
+    directoryData = Buffer.concat([directoryData, createFileEntry('..', parentDirSector)]);
 
     // read folder
     const fileList = fs.readdirSync(directoryPath);
@@ -45,13 +45,12 @@ function mountFolder(name, sector, parentDirSector) {
     for (let i = 0; i < fileList.length; i++) {
         // create fileEntryBuffer of 8 bytes
         sectorNum++;
-        let stats = fs.statSync(path.join(directoryPath, fileList[i]));
-        directoryData = Buffer.concat([directoryData, createFileEntry(fileList[i], stats.isDirectory(), sectorNum)]); 6
+        directoryData = Buffer.concat([directoryData, createFileEntry(fileList[i], sectorNum)]); 6
 
         // save the already calucated 'isDirectory' for later & other stuff
         fileList[i] = {
             name: fileList[i],
-            isDir: stats.isDirectory(),
+            isDir: fs.statSync(path.join(directoryPath, fileList[i])).isDirectory(),
             sector: sectorNum,
         };
     }
@@ -94,18 +93,15 @@ function mountFolder(name, sector, parentDirSector) {
 
 
 
-function createFileEntry(name, dir, sector) {
+function createFileEntry(name, sector) {
     const entrySize = 16;
 
     // check file name length isnt too big
-    if (name.length > (entrySize - 2)) throw new Error(`Error: file "${name}"'s name is too long!`);
-
-    // flags
-    let flags = 0b00000000;
-    if (dir == true) flags += 0b10000000;  // add 'isDir' flag if the file is a directory
+    if (name.length > (entrySize - 1)) throw new Error(`Error: file "${name}"'s name is too long! File names can be max 15 characters.`);
 
     // create array
-    let arr = [flags, sector]
+    let arr = [sector];
+    // push each char to the array
     for (const char of name) { arr.push(char.charCodeAt()); }
     // create buffer, and pad it to 16 bytes if it is not already
     // from: https://stackoverflow.com/questions/69114003/pad-nodejs-buffer-to-32-bytes-after-creation-from-string
