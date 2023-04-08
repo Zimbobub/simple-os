@@ -159,6 +159,11 @@ main:
             mov di, cmdColorStr
             call cmpCmd
             jc cmdColor
+
+        cmdTestTest:
+            mov di, cmdTestStr
+            call cmpCmd
+            jc cmdTest
             
 
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
@@ -210,6 +215,8 @@ cmdClear:
 %include "src/apps/clear.asm"
 cmdColor:
 %include "src/apps/color.asm"
+cmdTest:
+%include "src/apps/test.asm"
 
 
 ; kernel data
@@ -225,6 +232,7 @@ cmdRebootStr: db 'reboot', 0
 cmdEchoStr: db 'echo', 0
 cmdClearStr: db 'clear', 0
 cmdColorStr: db 'color', 0
+cmdTestStr: db 'test', 0
 
 
 ; command data

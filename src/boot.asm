@@ -21,6 +21,7 @@ _start:
     mov ax, 0           ; can't set ds/es directly
     mov ds, ax
     mov es, ax
+    mov ss, ax
     
     ; setup stack
     mov ss, ax
