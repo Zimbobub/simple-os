@@ -40,12 +40,32 @@ mov cx, 512
 
 TESTLOOP:
     mov al, [si]
+    call printU8Hex
+    mov al, ' '
     call putc
-    inc si
-    loop TESTLOOP
 
-pop ax
-pop cx
-pop si
+    ; increment pointer
+    inc si
+
+    ; print newline if % 16
+    mov ax, si
+    and ax, 0b0000000000001111  ; mask to last 4 bits
+    or ax, ax                   ; check last 4 bits are 0
+    jz .printNewline            ; if so, print newline
+    .printNewlineReturn:
+    loop TESTLOOP
+    jmp .exit
+
+    .printNewline:
+        mov al, 0x0D
+        call putc
+        mov al, 0x0A
+        call putc
+        jmp .printNewlineReturn
+
+    .exit:
+        pop ax
+        pop cx
+        pop si
 
 jmp main

@@ -15,7 +15,7 @@ splitFiles=false
 # get flags
 while getopts 'hcfs' OPTION; do
     case "$OPTION" in
-        h)  printf "SIMPLE-OS BUILD TOOL \n -h : show this help script \n -c : skip build directory cleanup \n -f : skip build mount directory cleanup \n -s : create a folder with each disk sector its own file (useful for debugging) \n"; exit 1;;
+        h)  printf "SIMPLE-OS BUILD TOOL \n -h : show this help message \n -c : skip build directory cleanup \n -f : skip build mount directory cleanup \n -s : create a folder with each disk sector its own file (useful for debugging) \n"; exit 1;;
         c)  cleanupTmp=false;;
         f)  cleanupMnt=false;;
         s)  splitFiles=true;;

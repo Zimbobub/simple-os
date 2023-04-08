@@ -4,6 +4,19 @@ bits 16
 %define ENDL 0x0D, 0x0A
 
 
+
+;
+; MEMORY LOCATION DEFNITIONS
+;
+%define WORKING_DIRECTORY_INFO  0x0500
+%define WORKING_DIRECTORY_NAME  0x0510
+%define COMMAND_BUFFER_START    0x0520
+%define COMMAND_BUFFER_END      0x05FF
+
+%define OSINFO                  0x8600
+%define FILE_SYSTEM_START       0x8800
+
+
 ; CODE BEGIN
 jmp signatureSkip           ; jump past signature, must be a short jump, (2 bytes) for signature reader to work
 dw 'ZM'                     ;  signature to show that kernel is loaded correctly, 0x5A4D
@@ -33,14 +46,12 @@ kernel:
 ; each char is pushed to stack
 main:
 
-    ; eventually create a pwd function that is called here
-
-    mov al, '>'
-    call putc
+    call displayPrompt
+    
 
 
-    mov si, 0500h   ; buffer pointer set to 0500h (start of free ram segment)
-    xor dx, dx      ; reset dx (length of buffer)
+    mov si, COMMAND_BUFFER_START    ; buffer pointer set to 0500h (start of free ram segment)
+    xor dx, dx                      ; reset dx (length of buffer)
 
     ; get keyboard input & print it
     getChar:
@@ -194,14 +205,6 @@ main:
 
 
 
-
-
-; --FUNCTIONS--
-
-
-
-
-
 ; COMMANDS:
 cmdHelp:
 %include "src/apps/help.asm"
@@ -219,8 +222,46 @@ cmdTest:
 %include "src/apps/test.asm"
 
 
-; kernel data
+
+; --FUNCTIONS--
+displayPrompt:
+    ; [USERNAME]@[HOSTNAME]:[PATH][SYMBOL]
+    mov si, Username
+    call puts
+
+    mov al, '@'
+    call putc
+
+    mov si, Hostname
+    call puts
+
+    mov al, ':'
+    call putc
+
+    mov si, WORKING_DIRECTORY_NAME
+    call puts
+
+    mov si, Symbol
+    call puts
+
+    ret
+
+
+
+; OS INFO (REPLACE LATER INTO OSINFO SECTOR
+; user will then be able to change on first startup
+; and later we can add commands that let them change it later
+Hostname: db 'simpleOS', 0
+Username: db 'zimbobub', 0
+; working directory stored in RAM
+Symbol: db '/$ ', 0
+
+
+; messages
 Loaded: db 'Kernel loaded', ENDL, 'Type "help" for a list of commands to get started', ENDL, 0
+
+
+; errors
 CommandNotFound1: db 'Command "', 0
 CommandNotFound2: db '" could not be found', ENDL, 0
 
