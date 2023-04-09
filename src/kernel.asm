@@ -178,6 +178,11 @@ main:
             mov di, cmdTestStr
             call cmpCmd
             jc cmdTest
+
+        cmdCdTest:
+            mov di, cmdCdStr
+            call cmpCmd
+            jc cmdCd
             
 
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
@@ -223,6 +228,8 @@ cmdColor:
 %include "src/apps/color.asm"
 cmdTest:
 %include "src/apps/test.asm"
+cmdCd:
+%include "src/apps/cd.asm"
 
 
 
@@ -277,6 +284,7 @@ cmdEchoStr: db 'echo', 0
 cmdClearStr: db 'clear', 0
 cmdColorStr: db 'color', 0
 cmdTestStr: db 'test', 0
+cmdCdStr: db 'cd', 0
 
 
 ; command data

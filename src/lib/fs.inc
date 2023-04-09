@@ -78,7 +78,7 @@ getDirectoryNameBySector:
     ; check if we are in root folder (byte 0 will be 0x06)
     ; if so, we dont need to write a name as root dir doesnt have one
     cmp al, 0x06
-    je .end
+    je .rootDir
 
     ; save the sector number
     mov cx, ax
@@ -98,10 +98,6 @@ getDirectoryNameBySector:
     mov si, ax                      ; pointer to directory we will search
     mov bx, cx                      ; sector entry we are looking for
     call searchDirectoryForSector   ; search for folder with that sector
-                                    
-    call printU16Hex
-
-
 
     ; get the name and write it to DI
     mov si, ax              ; move ax to si as AX cannot be a pointer
@@ -112,12 +108,17 @@ getDirectoryNameBySector:
         mov byte [di], bl   ; save that to [DI]
         inc di              ; increment end of string pointer
         loop .writeCharToMemory
+    jmp .end
+
+    .rootDir:
+        mov bl, 0
+        mov cx, 15
+        .clearDirChar:
+            mov byte [di], bl   ; move 0 into [DI]
+            inc di              ; increment pointer
+            loop .clearDirChar  ; loop 15 times
 
     .end:
-        ; temp for debugging:
-        ; mov byte [di], 'E'
-
-        ; restore regs
         pop si
         pop cx
         pop bx
