@@ -13,7 +13,7 @@ just under 64kb, 127 sectors (512 bytes/sector)
 
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:
-    first byte for flags (is directory, is executable...)
+    first byte for sector number
     other 15 for file name
 flags can be looked up in osinfo sector
 
@@ -58,7 +58,12 @@ bytes 127-511:
 RAM ALLOCATIONS:
 usable memory:
 0x0500 - 0x7BFF (30464 bytes / 29.75kib): kernel memory
-    0x0500 - 0x050F ( 16 bytes): info on current dir (sector, is protected, number of entries)
+    0x0500 - 0x050F ( 16 bytes): info on current dir 
+        0x500 sector #
+        0x501 # of entries
+        0x502 is protected?
+        ... lots of room for new flags to save
+        
     0x0510 - 0x051F ( 16 bytes): name of current directory (names are 15 bytes but null at the end ensures puts doesnt break)
     0x0520 - 0x05FF (224 bytes): command buffer (user input)
     0x0600 - 0x7BFF (30208 bytes): idk

@@ -64,7 +64,7 @@ printU8Binary:
 
     ; count down from 8
     mov bh, 8
-    mov bl, ah  ; mov input into bl
+    mov bl, al  ; mov input into bl
     .loop:
         test bl, 0b10000000 ; just check for uppermost bit
         jnz .print1         ; if so, print a 1
@@ -161,6 +161,22 @@ printU16Hex:
     call printU8Hex ; call for upper byte
     pop ax          ; restore AL
     call printU8Hex ; call for lower byte
+    ret
+
+
+
+
+
+; prints a newline
+newline:
+    push ax
+
+    mov al, 0x0D
+    call putc
+    mov al, 0x0A
+    call putc
+
+    pop ax
     ret
 
 

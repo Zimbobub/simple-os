@@ -13,6 +13,9 @@ bits 16
 %define COMMAND_BUFFER_START    0x0520
 %define COMMAND_BUFFER_END      0x05FF
 
+%define SECTOR_SIZE             0x0200
+%define BOOTSECTOR              0x7C00
+%define KERNEL                  0x7E00
 %define OSINFO                  0x8600
 %define FILE_SYSTEM_START       0x8800
 

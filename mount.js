@@ -14,7 +14,7 @@ let sectorNum = 6;
 let fsInfo = [];
 
 
-mountFolder('mount', 6);      // for simplicity & one less edge case, the root folder's parent dir is itself
+mountFolder('mount', 6, 6);      // for simplicity & one less edge case, the root folder's parent dir is itself
 
 // osinfoAddFile(6, true, false, 12);
 osinfoCreate();
