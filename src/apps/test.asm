@@ -71,7 +71,7 @@
 
 push ax
 
-mov ax, 6
+mov ax, 7
 call setWorkingDirectory
 
 pop ax

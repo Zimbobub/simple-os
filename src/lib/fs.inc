@@ -61,6 +61,73 @@ setWorkingDirectory:
 
 
 
+; gets the name of a folder from its sector number
+; returns nothing if we ask for sector 6 (root)
+;
+; params:
+; AX: sector number
+; DI: pointer to where to put name
+; NOTE: allow at least 16 bytes for name to fit into
+getDirectoryNameBySector:
+    ; save regs
+    push ax
+    push bx
+    push cx
+    push si
+
+    ; check if we are in root folder (byte 0 will be 0x06)
+    ; if so, we dont need to write a name as root dir doesnt have one
+    cmp al, 0x06
+    je .end
+
+    ; save the sector number
+    mov cx, ax
+
+    ; convert our sector number to memory address
+    call getSectorMemoryLocation
+
+    ; read the first byte (sector #) of the first entry (parent dir)
+    ; simplifies to 'mov ax, [ax]' , but we cant do that
+    mov bx, ax
+    mov ax, [bx]
+
+    ; get the memory address of the parent directory
+    call getSectorMemoryLocation   ; sector pointer to parent dir is alr in AX
+    
+    ; search the directory
+    mov si, ax                      ; pointer to directory we will search
+    mov bx, cx                      ; sector entry we are looking for
+    call searchDirectoryForSector   ; search for folder with that sector
+                                    
+    call printU16Hex
+
+
+
+    ; get the name and write it to DI
+    mov si, ax              ; move ax to si as AX cannot be a pointer
+    mov cx, 15              ; loop 15 times (15 char maximum length)
+    .writeCharToMemory:
+        inc si              ; inc char pointer (loop starts pointing to byte before the string)
+        mov byte bl, [si]   ; get the character from memory
+        mov byte [di], bl   ; save that to [DI]
+        inc di              ; increment end of string pointer
+        loop .writeCharToMemory
+
+    .end:
+        ; temp for debugging:
+        ; mov byte [di], 'E'
+
+        ; restore regs
+        pop si
+        pop cx
+        pop bx
+        pop ax
+        ret
+
+
+
+
+
 ; NOTE!!!!!!!!!!!: change to 'mov byte ax, [bx]' later so we only read one byte not 2
 
 ; reads from OSINFO sector with specified sector
@@ -79,58 +146,6 @@ getSectorInfo:
 
     pop bx
     ret
-
-
-
-
-
-; gets the name of a folder from its sector number
-; returns nothing if we ask for sector 6 (root)
-;
-; params:
-; AX: sector number
-; DI: pointer to where to put name
-; NOTE: allow at least 16 bytes for name to fit into
-getDirectoryNameBySector:
-    ; save regs
-    push ax
-    push bx
-    push cx
-
-    ; save the sector number
-    mov cx, ax
-
-    ; convert our sector number to memory address
-    call getSectorMemoryLocation
-
-    ; move the parent dir # to ax (currently pointed to by ax)
-    ; to do this we need to have both of these in diff regs
-    mov bx, ax
-    mov ax, [bx]
-
-    ; check if we are in root folder (byte 0 will be 0x06)
-    ; if so, we dont need to write a name as root dir doesnt have one
-    cmp ax, 0x06
-    je .end
-    
-    ; otherwise:
-    ; open parent folder (pointed to by '..', first entry)
-    ; NOTE: first byte of an entry is sector number, last 15 are name
-    
-    
-
-    ; search for folder with that sector (make a seperate func)
-    ; get the name and write it to SI
-
-    .end:
-        ; temp for debugging:
-        mov byte [di], 'E'
-
-        ; restore regs
-        pop cx
-        pop bx
-        pop ax
-        ret
 
 
 
@@ -158,3 +173,31 @@ getSectorMemoryLocation:
 
 
 
+; loops over every entry in a dir to find a sector
+; params:
+; SI: pointer to directory we are searching through
+; BX: sector number to find
+; returns:
+; AX: pointer to that file entry
+searchDirectoryForSector:
+    push cx
+    push si
+
+    mov cx, 32  ; max 32 file entries in folder
+    .loop:
+        cmp byte [si], bl    ; compare file entry sector # to one we want
+        je .exit             ; if found, exit
+
+        add si, 16      ; inc ax by 16, moving to next file entry
+        loop .loop      ; decrement cx until loop ends
+
+    ; if we didnt find it
+    .notFound:
+        xor si, si  ; zero the pointer, as we return it
+
+    .exit:
+        mov ax, si
+
+        pop si
+        pop cx
+        ret
