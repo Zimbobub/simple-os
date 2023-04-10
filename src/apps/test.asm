@@ -77,15 +77,22 @@
 ; pop ax
 
 
-mov si, msg
-mov cx, 10
-call putsLen
+; mov si, msg
+; mov cx, 10
+; call putsLen
 
-call newline
+; call newline
+
+
+pusha
+
+
 
 
 jmp main
 
 
+file1: db 'asdfasdfasdfasd', 0
+file2: db 'asdfasdfasdfasdf', 0
 
-msg: db 'testmsg'
+; msg: db 'testmsg'

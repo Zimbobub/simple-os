@@ -202,3 +202,105 @@ searchDirectoryForSector:
         pop si
         pop cx
         ret
+
+
+
+
+
+; finds the sector number of a file/dir from its name
+; params:
+; BX: sector # to search through
+; SI: pointer to name string    (must be null terminated)
+; returns:
+; AX: sector # we found (0 if not found)
+findSectorByName:
+    push bx
+    push cx
+    push si
+    push di
+
+    ; get to the specified dir
+    mov ax, bx
+    call getSectorMemoryLocation
+    mov di, ax
+    inc di
+
+    ; AX: sector number of current file entry
+    ; DI: pointer to (name of) file entry we are searching
+
+    ; loop 32 entries
+    mov cx, 32
+    .loop:
+        ; takes SI & DI as args & compares them (up to 15 chars, or null termination)
+        ; carry flag set if equal
+        call compareFileNames
+        jc .found
+
+        add ax, 16  ; jump to next file entry sector #
+        add di, 16  ; jump to next file entry name
+        loop .loop
+
+    .notFound:
+        xor ax, ax
+        jmp .exit
+
+    .found:
+        ; cannot directly move [AX] to AX
+        mov bx, ax
+        mov ax, [bx]
+        jmp .exit
+
+    .exit:
+        pop di
+        pop si
+        pop cx
+        pop bx
+        ret
+
+
+
+
+
+; takes SI & DI as args & compares them (up to 15 chars, or null termination)
+; carry flag set if equal
+compareFileNames:
+    push ax
+    push bx
+    push cx
+    push si
+    push di
+
+    mov cx, 15      ; compare 15 chars
+    .checkCharacter:
+        mov byte al, [si]
+        mov byte bl, [di]
+
+        ; check if equal before if zero so we know that they are same length
+        cmp al, bl
+        jne .notEqual
+
+        ; check if zero (for files below 15 chars long)
+        or al, al
+        jz .equal
+
+        ; increment pointers
+        inc si
+        inc di
+        ; loop again
+        loop .checkCharacter
+
+    .equal:
+        stc     ; set carry
+        jmp .exit
+
+    .notEqual:
+        clc     ; clear carry
+
+    .exit:
+        pop di
+        pop si
+        pop cx
+        pop bx
+        pop ax
+        ret
+
