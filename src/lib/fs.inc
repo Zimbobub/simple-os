@@ -247,7 +247,8 @@ findSectorByName:
     .found:
         ; cannot directly move [AX] to AX
         mov bx, ax
-        mov ax, [bx]
+        xor ah, ah
+        mov al, [bx]
         jmp .exit
 
     .exit:

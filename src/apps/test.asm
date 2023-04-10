@@ -87,12 +87,22 @@
 pusha
 
 
+mov bx, 6
+mov si, file1
+
+call findSectorByName
+
+; print AX
+call printU16Hex
+
+
+popa
 
 
 jmp main
 
 
-file1: db 'asdfasdfasdfasd', 0
+file1: db 'test.txt', 0
 file2: db 'asdfasdfasdfasdf', 0
 
 ; msg: db 'testmsg'
