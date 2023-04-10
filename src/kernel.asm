@@ -34,7 +34,6 @@ signatureSkip: jmp kernel   ; jump past dependencies
 
 
 kernel:
-    dw 'AB'
     call clearScreen    ; clears bios message and sets video mode
 
     mov bl, 01h
