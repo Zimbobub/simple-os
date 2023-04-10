@@ -69,14 +69,23 @@
 ;         pop si
 
 
-push ax
+; push ax
 
-mov ax, 7
-call setWorkingDirectory
+; mov ax, 7
+; call setWorkingDirectory
 
-pop ax
+; pop ax
 
 
+mov si, msg
+mov cx, 10
+call putsLen
+
+call newline
 
 
 jmp main
+
+
+
+msg: db 'testmsg'

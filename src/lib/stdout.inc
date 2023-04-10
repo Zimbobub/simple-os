@@ -31,7 +31,7 @@ puts:
 
     ; label to fetch next char of string
     .nextChar:
-        mov al, [si]    ; read from memory address pointed to by SI (stack pointer)
+        mov byte al, [si]    ; read from memory address pointed to by SI (stack pointer)
         inc si          ; increment stack pointer
 
         or al, al       ; check if AL is 0 (end of string)
@@ -43,6 +43,33 @@ puts:
     .exit:
         ; restore regs
         pop si
+        pop ax
+        ret
+
+
+
+
+
+; prints a string of set length
+; assume that string starting pointer is in register SI
+; length is in CX
+putsLen:
+    ; save regs
+    push ax
+    push cx
+    push si
+
+    ; label to fetch next char of string
+    .nextChar:
+        mov byte al, [si]    ; read from memory address pointed to by SI (stack pointer)
+        call putc       ; else print char
+        inc si          ; increment stack pointer
+        loop .nextChar  ; and loop over
+    
+    .exit:
+        ; restore regs
+        pop si
+        pop cx
         pop ax
         ret
 
