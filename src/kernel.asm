@@ -201,16 +201,12 @@ main:
             cmp dx, 1
             je main
 
-            ; else, if no command was found, display message and jump to start
-            ; 'Command "${command}" could not be found'
-            push si
-            mov si, CommandNotFound1
+            ; if no command was found, display message and jump to start
+            ; '${command} is not recognised as a command, for a list of commands, type "help"'
+            ; command from input
             call puts
-            pop si
-
-            call puts
-
-            mov si, CommandNotFound2
+            ; cmdNotFound message
+            mov si, CommandNotFound
             call puts
 
             jmp main
@@ -278,8 +274,7 @@ Loaded: db 'Kernel loaded', ENDL, 'Type "help" for a list of commands to get sta
 
 
 ; errors
-CommandNotFound1: db 'Command "', 0
-CommandNotFound2: db '" could not be found', ENDL, 0
+CommandNotFound: db ' is not recognised as a command, for a list of commands, type "help"', ENDL, 0
 
 
 ; commands
