@@ -1,23 +1,16 @@
-8 open files/folders (sectors) at once
-(first is always curren working directory)
-store which ones are open in 8 bit num
-
-in kernel:
-function to get file location by name
-function to open file to memory in first avaliable slot
-function to close file (just set its 'open' bit to false so another can override it)
-function to write sector back
+kernel functions:
+✔️set working directory
+✔️find name from sector #
+✔️find sector # from name
+save 0x7C00-0x179FF back to disk
+... & other functions to allow below commands
 
 commands to create:
 pwd
-cd
-ls
+✔️cd
+✔️ls
 mkdir
 rmdir
 rm
 cat
 & eventually text editor
-
-
-https://wiki.osdev.org/Memory_Map_(x86)#Real_mode_address_space_.28.3C_1_MiB.29
-write files to memory from disk to 7E00 (480.5kib of space)
