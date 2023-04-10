@@ -22,7 +22,7 @@ bits 16
 
 ; CODE BEGIN
 jmp signatureSkip           ; jump past signature, must be a short jump, (2 bytes) for signature reader to work
-dw 'ZM'                     ;  signature to show that kernel is loaded correctly, 0x5A4D
+dw 'ZM'                     ; signature to show that kernel is loaded correctly, 0x5A4D
 signatureSkip: jmp kernel   ; jump past dependencies
 
 
@@ -36,8 +36,13 @@ signatureSkip: jmp kernel   ; jump past dependencies
 kernel:
     call clearScreen    ; clears bios message and sets video mode
 
+    ; set color to blue
     mov bl, 01h
     call setColor
+
+    ; change directory to /root/ at startup
+    mov ax, 6
+    call setWorkingDirectory
 
     ; print welcome message
     mov si, Loaded ; move pointer to string into source indicator
