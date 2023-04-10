@@ -179,6 +179,11 @@ main:
             call cmpCmd
             jc cmdTest
 
+        cmdCsTest:
+            mov di, cmdCsStr
+            call cmpCmd
+            jc cmdCs
+
         cmdCdTest:
             mov di, cmdCdStr
             call cmpCmd
@@ -228,6 +233,8 @@ cmdColor:
 %include "src/apps/color.asm"
 cmdTest:
 %include "src/apps/test.asm"
+cmdCs:
+%include "src/apps/cs.asm"
 cmdCd:
 %include "src/apps/cd.asm"
 cmdLs:
@@ -285,6 +292,7 @@ cmdEchoStr: db 'echo', 0
 cmdClearStr: db 'clear', 0
 cmdColorStr: db 'color', 0
 cmdTestStr: db 'test', 0
+cmdCsStr: db 'cs', 0
 cmdCdStr: db 'cd', 0
 cmdLsStr: db 'ls', 0
 
