@@ -25,7 +25,7 @@ osinfoCreate();
 
 
 function mountFolder(name, sector, parentDirSector) {
-    console.log(`Mounting dir  at sector ${sector}:`.padEnd(27), path.relative(__dirname, directoryPath));
+    // console.log(`Mounting dir  at sector ${sector}:`.padEnd(27), path.relative(__dirname, directoryPath));
 
     // create fsinfo entry
     osinfoAddFile(sector, false, false, fs.readdirSync(directoryPath).length + 1);
@@ -121,7 +121,7 @@ function createFileEntry(name, sector) {
 
 
 function mountFile(name, sector) {
-    console.log(`Mounting file at sector ${sector}:`.padEnd(27), path.relative(__dirname, path.join(directoryPath, name)));
+    // console.log(`Mounting file at sector ${sector}:`.padEnd(27), path.relative(__dirname, path.join(directoryPath, name)));
 
     // create fsinfo entry
     osinfoAddFile(sector, false, false, 0);

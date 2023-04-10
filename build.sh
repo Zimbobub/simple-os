@@ -8,18 +8,24 @@
 #
 
 # set defaults
-cleanupTmp=true
-cleanupMnt=true
+# verbose=false
+cleanup=true
 splitFiles=false
+run=false
 
 # get flags
-while getopts 'hcfs' OPTION; do
+while getopts 'hcsr' OPTION; do
     case "$OPTION" in
-        h)  printf "SIMPLE-OS BUILD TOOL \n -h : show this help message \n -c : skip build directory cleanup \n -f : skip build mount directory cleanup \n -s : create a folder with each disk sector its own file (useful for debugging) \n"; exit 1;;
+        h)  printf "SIMPLE-OS BUILD TOOL \n \
+                    -h : show this help message \n \
+                    -c : skip build directory cleanup \n \
+                    -s : create a folder with each disk sector its own file (useful for debugging) \n \
+                    -r : run qemu once done"; exit 1;;
+        v)  verbose=true;;
         c)  cleanupTmp=false;;
-        f)  cleanupMnt=false;;
         s)  splitFiles=true;;
-        ?)  echo "script usage: $(basename \$0) [-c] [-f] [-s]";;
+        r)  run=true;;
+        ?)  echo "run './build.sh -h' for a list of options";;
     esac
 done
 shift "$(($OPTIND -1))"
@@ -97,15 +103,8 @@ if $cleanupTmp; then
     echo "Cleaning up build directory, to skip this step, use -c"
 
     cd build                    # move into build so rm command is simpler
-    ls | grep -xv -e "os.bin" -e "mount" | parallel rm -rv
+    ls | grep -xv -e "os.bin" | parallel rm -r
     cd ..
-    echo -e
-fi
-
-# cleanup mount folder
-if $cleanupMnt; then
-    echo "Removing mount directory, to skip this step, use -f"
-    rm -rv build/mount
     echo -e
 fi
 
@@ -122,7 +121,6 @@ if $splitFiles; then
         --numeric-suffixes \
         --suffix-length=3 \
         --additional-suffix=.bin \
-        --verbose \
         ../os.bin \
         "" # <-- empty prefix instead of 'x'
 
@@ -157,3 +155,33 @@ echo "Done!"
 # kernel:       0x0200-0x09FF
 # sysinfo:      0x0A00-0x0BFF
 # file system:  0x0C00-0xFDFF
+
+
+
+
+
+# AUTO RUN
+if $run; then
+    echo -e
+    printf %"$COLUMNS"s |tr " " "-"
+    echo -e
+    echo -e
+
+    qemu-system-i386 -hda build/os.bin -monitor stdio
+fi
+
+<<comment
+
+dump (pretty much) all memory (BIOS debugging ig)
+pmemsave 0 0xFFFFF "./.memdump.bin"
+
+to read code segment (bootloader first 512, kernel next 2048)
+pmemsave 0x7C00 2560 "./.memdump.bin"
+
+to read code, sysinfo & fs
+pmemsave 0x7C00 0xFDFF "./.memdump.bin"
+
+to read data segment 1
+pmemsave 0x0500 0x7700 "./.memdump.bin"
+
+comment
