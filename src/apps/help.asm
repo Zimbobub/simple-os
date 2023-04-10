@@ -14,5 +14,6 @@ helpMsg: db '  help   : displays this message', ENDL, \
             '  echo   : prints what you input it', ENDL, \
             '  clear  : clears the screen', ENDL, \
             '  color  : sets the background color', ENDL, \
+            '  cs     : changes the working sector', ENDL, \
             '  cd     : changes the working directory', ENDL, \
             '  ls     : lists all files in the working directory', ENDL, 0
