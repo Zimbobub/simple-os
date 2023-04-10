@@ -58,7 +58,7 @@ bytes 127-511:
 RAM ALLOCATIONS:
 usable memory:
 0x0500 - 0x7BFF (30464 bytes / 29.75kib): kernel memory
-    0x0500 - 0x050F ( 16 bytes): info on current dir 
+    0x0500 - 0x050F ( 16 bytes): info on working directory 
         0x500 sector #
         0x501 # of entries
         0x502 is protected?

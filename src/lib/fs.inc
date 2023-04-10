@@ -135,7 +135,7 @@ getDirectoryNameBySector:
 ; params:
 ; AX - sector to get info about
 ; returns:
-; AX - sector info
+; AL - sector info
 getSectorInfo:
     push bx
 

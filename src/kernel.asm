@@ -198,6 +198,11 @@ main:
             call cmpCmd
             jc cmdLs
 
+        cmdPwdTest:
+            mov di, cmdPwdStr
+            call cmpCmd
+            jc cmdPwd
+
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
         ; mov [si], bl
 
@@ -243,6 +248,8 @@ cmdCd:
 %include "src/apps/cd.asm"
 cmdLs:
 %include "src/apps/ls.asm"
+cmdPwd:
+%include "src/apps/pwd.asm"
 
 
 
@@ -299,6 +306,7 @@ cmdTestStr: db 'test', 0
 cmdCsStr: db 'cs', 0
 cmdCdStr: db 'cd', 0
 cmdLsStr: db 'ls', 0
+cmdPwdStr: db 'pwd', 0
 
 
 
