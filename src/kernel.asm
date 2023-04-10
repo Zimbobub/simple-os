@@ -289,9 +289,6 @@ cmdCdStr: db 'cd', 0
 cmdLsStr: db 'ls', 0
 
 
-; command data
-helpMsg: db ENDL, '    help   : displays this message', ENDL, '    exit   : shuts down the computer', ENDL, '    reboot : restarts the os', ENDL, '    echo   : prints what you input it', ENDL, '    clear  : clears the screen', ENDL, '    color  : sets colors', ENDL, ENDL, 0
-
 
 ; gives us 2kb of space to write both kernel and programs
 ; if this is changed, change the sectors read number in bootloader to ((kernelSize / 512) + 1)
