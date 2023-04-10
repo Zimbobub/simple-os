@@ -62,7 +62,7 @@ nasm -f bin -o build/kernel.bin src/kernel.asm
 
 
 # printf %"$COLUMNS"s |tr " " "-"
-echo "Mounting file system:"
+echo "Mounting file system..."
 
 rm -rf build/mount                  # delete old mount folder
 mkdir -p build/mount                # make new one
@@ -75,7 +75,7 @@ cd ../..                            # return to main project dir
 
 # printf %"$COLUMNS"s |tr " " "-"
 # newline separator
-echo -e
+# echo -e
 
 
 
@@ -85,8 +85,8 @@ cat build/boot.bin \
     build/info.bin \
     build/fs.bin \
     > build/os.bin
-echo "Build complete"
-echo -e
+echo "Build complete, finishing up..."
+# echo -e
 
 
 
@@ -105,7 +105,7 @@ if $cleanupTmp; then
     cd build                    # move into build so rm command is simpler
     ls | grep -xv -e "os.bin" | parallel rm -r
     cd ..
-    echo -e
+    # echo -e
 fi
 
 if $splitFiles; then
@@ -126,7 +126,7 @@ if $splitFiles; then
 
     cd ../..    # return to original folder
 
-    echo -e
+    # echo -e
 fi
 
 
@@ -162,10 +162,10 @@ echo "Done!"
 
 # AUTO RUN
 if $run; then
-    echo -e
+    # echo -e
     printf %"$COLUMNS"s |tr " " "-"
-    echo -e
-    echo -e
+    # echo -e
+    # echo -e
 
     qemu-system-i386 -hda build/os.bin -monitor stdio
 fi
