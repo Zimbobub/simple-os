@@ -1,15 +1,15 @@
 disk sectors:
 
 0: bootsector
-1-4: kernel
-5: settings & sector list (tells us stuff like if it is free)
-6...: file system
+1-8: kernel
+9: settings & sector list (tells us stuff like if it is free)
+A...: file system
 
 
 
 FS:
 just under 64kb, 127 sectors (512 bytes/sector)
-6 reserved sectors, 121 left for FS
+10 reserved sectors, 117 left for FS
 
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:
@@ -72,9 +72,9 @@ usable memory:
 
 0x7C00 - 0x179FF (65024 bytes / 63.5kib): disk
     0x7C00 - 0x7DFF  (  512 bytes  /    1 sectors): bootsector
-    0x7E00 - 0x85FF  ( 2048 bytes  /    4 sectors): kernel
-    0x8600 - 0x87FF  (  512 bytes  /    1 sectors): osinfo
-    0x8800 - 0x179FF (61952 bytes  /  121 sectors): file system
+    0x7E00 - 0x8DFF  ( 4096 bytes  /    8 sectors): kernel
+    0x8E00 - 0x8FFF  (  512 bytes  /    1 sectors): osinfo
+    0x9000 - 0x179FF (59904 bytes  /  117 sectors): file system
 
 
 

@@ -175,11 +175,17 @@ fi
 dump (pretty much) all memory (BIOS debugging ig)
 pmemsave 0 0xFFFFF "./.memdump.bin"
 
-to read code segment (bootloader first 512, kernel next 2048)
-pmemsave 0x7C00 2560 "./.memdump.bin"
+to read code segment (bootloader first 512, kernel next 4096)
+pmemsave 0x7C00 4068 "./.memdump.bin"
 
-to read code, sysinfo & fs
-pmemsave 0x7C00 0xFDFF "./.memdump.bin"
+to read osinfo segment
+pmemsave 0x8E00 0x200 "./.memdump.bin"
+
+to read fs
+pmemsave 0x9000 0xEA00 "./.memdump.bin"
+
+to read code, sysinfo & fs (all disk contents)
+pmemsave 0x7C00 0xFE00 "./.memdump.bin"
 
 to read data segment 1
 pmemsave 0x0500 0x7700 "./.memdump.bin"
