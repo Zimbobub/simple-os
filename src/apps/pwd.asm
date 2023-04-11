@@ -8,8 +8,6 @@ call puts
 mov si, WORKING_DIRECTORY_NAME
 mov cx, 15
 call putsLen
-mov al, '/'
-call putc
 call newline
 
 
