@@ -12,8 +12,6 @@ call newline
 
 
 
-
-
 ; sector #
 mov si, .sectorLabel
 call puts
@@ -21,8 +19,6 @@ call puts
 mov al, [WORKING_DIRECTORY_INFO]
 call printU8Hex
 call newline
-
-
 
 
 
@@ -36,8 +32,6 @@ and al, 0b00011111
 call printU8Hex
 pop ax
 call newline
-
-
 
 
 
