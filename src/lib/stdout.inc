@@ -237,35 +237,6 @@ printU8Decimal:
 
 
 
-; prints a newline
-newline:
-    push ax
-
-    mov al, 0x0D
-    call putc
-    mov al, 0x0A
-    call putc
-
-    pop ax
-    ret
-
-
-
-
-
-; char in al
-; count in cx
-; 80 in cx = entire row
-printTimes:
-    .loop:
-        call putc
-        loop .loop
-    ret
-
-
-
-
-
 ; clears screen by setting video mode
 clearScreen:
     push ax
