@@ -4,17 +4,17 @@ const path = require('path');
 // path we are currently mounting
 let directoryPath = path.join(__dirname, 'mount');
 
-// fs starts at sector 6
+// fs starts at sector 10
 // increment with every file/folder we mount
-let sectorNum = 6;
+let sectorNum = 10;
 
 // create OSINFO buffer, first 6 bytes are empty, the rest we will concatenate
 let fsInfo = [];
 
 
-mountFolder('mount', 6, 6);      // for simplicity & one less edge case, the root folder's parent dir is itself
+mountFolder('mount', 10, 10);      // for simplicity & one less edge case, the root folder's parent dir is itself
 
-// osinfoAddFile(6, true, false, 12);
+// osinfoAddFile(10, true, false, 12);
 osinfoCreate();
 
 

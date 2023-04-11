@@ -62,7 +62,7 @@ setWorkingDirectory:
 
 
 ; gets the name of a folder from its sector number
-; returns nothing if we ask for sector 6 (root)
+; returns nothing if we ask for sector 10 (root)
 ;
 ; params:
 ; AX: sector number
@@ -75,9 +75,9 @@ getDirectoryNameBySector:
     push cx
     push si
 
-    ; check if we are in root folder (byte 0 will be 0x06)
+    ; check if we are in root folder (byte 0 will be 0x0A)
     ; if so, we dont need to write a name as root dir doesnt have one
-    cmp al, 0x06
+    cmp al, 0x0A
     je .rootDir
 
     ; save the sector number

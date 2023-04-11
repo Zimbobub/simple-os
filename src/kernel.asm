@@ -41,7 +41,7 @@ kernel:
     call setColor
 
     ; change directory to /root/ at startup
-    mov ax, 6
+    mov ax, 10
     call setWorkingDirectory
 
     ; print welcome message
@@ -311,5 +311,4 @@ cmdPwdStr: db 'pwd', 0
 
 
 ; gives us 2kb of space to write both kernel and programs
-; if this is changed, change the sectors read number in bootloader to ((kernelSize / 512) + 1)
 times 4096 - ($-$$) db 0
