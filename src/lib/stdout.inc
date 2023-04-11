@@ -194,49 +194,6 @@ printU16Hex:
 
 
 
-; prints an 8 bit decimal number
-; input in AL
-printU8Decimal:
-    push ax
-    push bx
-    push cx
-    push dx
-
-    xor ah, ah  ; AH = 0, AL = input
-    mov bx, 10  ; we will divide by 10 each time
-    xor dx, dx  ; input to DIV is DX:AX, we want DX = 0
-    mov cx, 5   ; 8 bit numbers in decimal are 3 digits
-    .divideLoop:
-        
-        div bx
-        ; AX = quotient, keep this for next loop
-        ; DX = remainder, push to stack to print later
-        push dx
-
-        loop .divideLoop
-
-    push 0  ; push random stuff as every digit is spaced in the stack
-    ; for some reason after the first digit we need to divide twice to get the num we want
-    mov cx, 3
-    .printLoop:
-        pop ax      ; pop twice to get rid of garbage number
-        pop ax      ; pop the chars in reverse order
-        add al, '0' ; add ascii value of '0' for each char
-        call putc   ; print that char
-
-        loop .printLoop
-
-
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
-
-
-
-
-
 ; prints a newline
 newline:
     push ax
