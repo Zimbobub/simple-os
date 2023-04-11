@@ -9,6 +9,14 @@ push si
 ; shift the command away
 add si, 3
 
+; check if user inputted '/', short for root dir
+mov byte al, [si]
+cmp al, '/'
+je .rootDir
+
+
+; else, search for the directory
+
 ; get the sector number
 ; BX: sector to search
 ; SI: filename to search for
@@ -31,6 +39,14 @@ call setWorkingDirectory
     pop ax
 
     jmp main
+
+
+
+; if user inputted 'cd /'
+.rootDir:
+    mov ax, ROOT_DIRECTORY_SECTOR
+    call setWorkingDirectory
+    jmp .exit
 
 
 
