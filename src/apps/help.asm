@@ -16,4 +16,6 @@ helpMsg: db '  help   : displays this message', ENDL, \
             '  color  : sets the background color', ENDL, \
             '  cs     : changes the working sector', ENDL, \
             '  cd     : changes the working directory', ENDL, \
-            '  ls     : lists all files in the working directory', ENDL, 0
+            '  ls     : lists all files in the working directory', ENDL, \
+            '  pwd    : gives info on the current directory', ENDL, \
+            '  dump   : dumps the ascii contents of a file', ENDL, 0
