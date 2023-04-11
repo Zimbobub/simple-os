@@ -9,7 +9,7 @@ A...: file system
 
 FS:
 just under 64kb, 127 sectors (512 bytes/sector)
-10 reserved sectors, 117 left for FS
+10 reserved sectors (0-9), 117 left for FS
 
 folders can hold up to 31 sub directories or files (first one for parent folder)
 each entry is 16 bytes:

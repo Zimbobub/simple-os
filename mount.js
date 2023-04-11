@@ -1,22 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
+// root dir sector number
+const rootDir = 0x0A;       // 10
+
 // path we are currently mounting
 let directoryPath = path.join(__dirname, 'mount');
 
 // fs starts at sector 10
 // increment with every file/folder we mount
-let sectorNum = 10;
+let sectorNum = rootDir;
 
 // create OSINFO buffer, first 6 bytes are empty, the rest we will concatenate
 let fsInfo = [];
 
 
-mountFolder('mount', 10, 10);      // for simplicity & one less edge case, the root folder's parent dir is itself
+mountFolder('mount', rootDir, rootDir);      // for simplicity & one less edge case, the root folder's parent dir is itself
 
-// osinfoAddFile(10, true, false, 12);
 osinfoCreate();
-
 
 
 

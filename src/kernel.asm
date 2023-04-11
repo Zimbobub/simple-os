@@ -19,6 +19,15 @@ bits 16
 %define OSINFO                  0x8600
 %define FILE_SYSTEM_START       0x8800
 
+;
+; SECTOR DEFINITIONS
+;
+%define BOOTLOADER_SECTOR       0x00
+%define KERNEL_START_SECTOR     0x01
+%define OSINFO_SECTOR           0x09
+%define ROOT_DIRECTORY_SECTOR   0x0A
+
+
 
 ; CODE BEGIN
 jmp signatureSkip           ; jump past signature, must be a short jump, (2 bytes) for signature reader to work
@@ -41,7 +50,7 @@ kernel:
     call setColor
 
     ; change directory to /root/ at startup
-    mov ax, 10
+    mov ax, ROOT_DIRECTORY_SECTOR
     call setWorkingDirectory
 
     ; print welcome message
