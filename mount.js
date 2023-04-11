@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// path to root of mount
-const mountRoot = path.join(__dirname, 'mount');
 // path we are currently mounting
 let directoryPath = path.join(__dirname, 'mount');
 
