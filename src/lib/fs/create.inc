@@ -13,6 +13,9 @@ createDirectory:
     push dx
     push si
 
+    ; save parent folder for later
+    push ax
+
     ; check if the directory's name is taken
     mov bx, ax      ; BX: sector # to search through
                     ; SI: pointer to name string    (must be null terminated)
@@ -66,18 +69,21 @@ createDirectory:
         ret
 
     .takenError:
+        pop ax
         mov si, .takenErrorMsg
         call puts
         jmp .exit
     .takenErrorMsg: db 'Error: Directory already exists!', ENDL, 0
 
     .dirFullError:
+        pop ax
         mov si, .dirFullError
         call puts
         jmp .exit
     .dirFullErrorMsg: db 'Error: Parent directory is full!', ENDL, 0
 
     .fsFullError:
+        pop ax
         mov si, .fsFullError
         call puts
         jmp .exit
