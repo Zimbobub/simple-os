@@ -61,13 +61,9 @@ createDirectory:
         mov ax, bx
         call getSectorMemoryLocation
         mov bx, ax
-; call printU16Hex
-; call newline
 
         pop ax      ; restore parent directory
         xor ah, ah  ; zero the upper byte, just in case
-; call printU8Hex
-
 
         ; AX: parent dir sector
         ; BX: new dir sector
@@ -196,10 +192,6 @@ createFileEntry:
         inc al                          ; increment the num of entries (last 5 bits so incrementing whole reg only incs that)
         ; AH - sector to set info on
         ; AL - sector info to write
-        call printU16Hex
-        call newline
-        call printU8Binary
-
         call setSectorInfo
 
 
