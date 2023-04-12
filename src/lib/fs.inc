@@ -63,7 +63,6 @@ setWorkingDirectory:
 
 
 
-; NOTE!!!!!!!!!!!: change to 'mov byte ax, [bx]' later so we only read one byte not 2
 
 ; reads from OSINFO sector with specified sector
 ; params:
