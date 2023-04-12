@@ -1,5 +1,6 @@
 
 %include "src/lib/fs/search.inc"
+%include "src/lib/fs/create.inc"
 
 ; sets the working directory based on sector number
 ; sets the info in the OSINFO sector up
@@ -72,10 +73,10 @@ setWorkingDirectory:
 getSectorInfo:
     push bx
 
-    mov bx, OSINFO  ; move address of OSINFO sector to bx
-    add bx, ax      ; add the offset (sector to read from) to pointer
+    mov bx, OSINFO      ; move address of OSINFO sector to bx
+    add bx, ax          ; add the offset (sector to read from) to pointer
     
-    mov byte al, [bx]   ;read from memory address pointed to by bx
+    mov byte al, [bx]   ; read from memory address pointed to by bx
     xor ah, ah          ; clear AH as we dont need it
 
     pop bx

@@ -16,8 +16,8 @@ bits 16
 %define SECTOR_SIZE             0x0200
 %define BOOTSECTOR              0x7C00
 %define KERNEL                  0x7E00
-%define OSINFO                  0x8600
-%define FILE_SYSTEM_START       0x8800
+%define OSINFO                  0x8E00
+%define FILE_SYSTEM_START       0x9000
 
 ;
 ; SECTOR DEFINITIONS
