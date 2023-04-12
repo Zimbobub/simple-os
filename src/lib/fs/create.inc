@@ -57,6 +57,20 @@ createDirectory:
 
     ; init an empty directory
     .createDir:
+        ; get the memory address of the new directory
+        mov ax, bx
+        call getSectorMemoryLocation
+
+        pop ax  ; restore parent directory
+        ; AX: parent dir sector
+        ; BX: new dir sector
+
+        ; dir will be initialized with 1 entry (parent folder)
+        ; entry format (our case 3 bytes):
+        ; [parent dir ptr] '.' '.'
+        mov byte [bx], al       ; move pointer of parent dir to dirEntry[0]
+        mov byte [bx + 1], '.'  ; save parent dir name '..'
+        mov byte [bx + 2], '.'
 
 
 
