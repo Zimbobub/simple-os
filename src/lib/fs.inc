@@ -90,7 +90,7 @@ getSectorInfo:
 ; in:  AX: sector num
 ; out: AX: memory address
 getSectorMemoryLocation:
-    ; address = 0x7C00 + (sector * 512)
+    ; address = (sector * 512) + 0x7C00
     ; save bx
     push bx
 
@@ -99,6 +99,29 @@ getSectorMemoryLocation:
     mul bx      ; returns value into AX
     ; + 0x7C00
     add ax, 0x7C00
+
+    ; exit
+    pop bx
+    ret
+
+
+
+
+
+; converts a memory address to a sector number
+; in:  AX: memory address
+; out: AX: sector num
+getMemoryLocationSector:
+    ; sector = (address - 0x7C00) / 512
+    ; save bx
+    push bx
+
+    ; - 0x7C00
+    sub ax, 0x7C00
+
+    ; / 512     (rounds down by ignoring remainder)
+    mov bx, 512
+    div bx      ; returns value into AX
 
     ; exit
     pop bx
