@@ -217,6 +217,11 @@ main:
             call cmpCmd
             jc cmdDump
 
+        cmdMkdirTest:
+            mov di, cmdMkdirStr
+            call cmpCmd
+            jc cmdMkdir
+
         ; mov bl, [cmdHelpStr] ; test where SI points to by writing to it
         ; mov [si], bl
 
@@ -266,6 +271,8 @@ cmdPwd:
 %include "src/apps/pwd.asm"
 cmdDump:
 %include "src/apps/dump.asm"
+cmdMkdir:
+%include "src/apps/mkdir.asm"
 
 
 
@@ -324,6 +331,7 @@ cmdCdStr: db 'cd', 0
 cmdLsStr: db 'ls', 0
 cmdPwdStr: db 'pwd', 0
 cmdDumpStr: db 'dump', 0
+cmdMkdirStr: db 'mkdir', 0
 
 
 
