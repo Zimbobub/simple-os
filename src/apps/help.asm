@@ -18,4 +18,5 @@ helpMsg: db '  help   : displays this message', ENDL, \
             '  cd     : changes the working directory', ENDL, \
             '  ls     : lists all files in the working directory', ENDL, \
             '  pwd    : gives info on the current directory', ENDL, \
-            '  dump   : dumps the ascii contents of a file', ENDL, 0
+            '  dump   : dumps the ascii contents of a file', ENDL, \
+            '  mkdir  : creates a new directory', ENDL, 0
