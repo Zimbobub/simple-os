@@ -21,7 +21,7 @@ createDirectory:
     ; AX: sector # we found (0 if not found)
     ; if it is zero, the name is free & we can continue
     or ax, ax
-    jnz .error
+    jnz .takenError
 
     ; TODO: check if directory is full (31 entries)
 
@@ -39,12 +39,18 @@ createDirectory:
         inc bx
         loop .findOpenSector
         ; if we reach here the FS is full
-        jmp .error
+        jmp .fsFullError
 
     ; allocate space in the OSINFO sector
     .allocateDir:
-        mov ax, bx
-        call printU16Hex
+        ; sector is now stored in BX
+        push bx ; save BX as we will modify it
+        add bx, OSINFO      ; offset the OSINFO address by BX
+
+        mov al, 0b10000001  ; default directory info (used, non-exec, non-prot, 1 entry)
+        mov byte [bx], al   ; save it in OSINFO
+
+        pop bx
 
     ; init an empty directory
     .createDir:
@@ -59,6 +65,20 @@ createDirectory:
         pop ax
         ret
 
-    .error:
-        ; TODO: error msgs
+    .takenError:
+        mov si, .takenErrorMsg
+        call puts
         jmp .exit
+    .takenErrorMsg: db 'Error: Directory already exists!', ENDL, 0
+
+    .dirFullError:
+        mov si, .dirFullError
+        call puts
+        jmp .exit
+    .dirFullErrorMsg: db 'Error: Parent directory is full!', ENDL, 0
+
+    .fsFullError:
+        mov si, .fsFullError
+        call puts
+        jmp .exit
+    .fsFullErrorMsg: db 'Error: File system is full!', ENDL, 0
