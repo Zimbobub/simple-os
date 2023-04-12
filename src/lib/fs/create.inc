@@ -61,12 +61,12 @@ createDirectory:
         mov ax, bx
         call getSectorMemoryLocation
         mov bx, ax
-call printU16Hex
-call newline
+; call printU16Hex
+; call newline
 
         pop ax      ; restore parent directory
         xor ah, ah  ; zero the upper byte, just in case
-call printU8Hex
+; call printU8Hex
 
 
         ; AX: parent dir sector
@@ -168,6 +168,7 @@ createFileEntry:
     ; pointer to empty file entry in DI
     ; sector ptr in BX from args
     .addEntry:
+    push ax ; save parent dir for later
         mov byte [di], bl   ; save the sector ptr
         inc di
 
@@ -179,6 +180,28 @@ createFileEntry:
             inc si
             inc di
             loop .copyChar
+
+    pop ax  ; get parent dir ptr back from stack
+
+    ; increment the number of entries in the OSINFO
+    .incrementOSINFO:
+        call getMemoryLocationSector    ; get the sector from the memory location
+
+
+        mov ah, al                      ; save the sector number to AH
+        call getSectorInfo              ; get the sector info
+
+        ; call printU16Binary
+
+        inc al                          ; increment the num of entries (last 5 bits so incrementing whole reg only incs that)
+        ; AH - sector to set info on
+        ; AL - sector info to write
+        call printU16Hex
+        call newline
+        call printU8Binary
+
+        call setSectorInfo
+
 
     .exit:
         popa

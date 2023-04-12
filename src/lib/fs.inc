@@ -66,17 +66,40 @@ setWorkingDirectory:
 
 ; reads from OSINFO sector with specified sector
 ; params:
-; AX - sector to get info about
+; AL - sector to get info about
 ; returns:
 ; AL - sector info
 getSectorInfo:
     push bx
 
     mov bx, OSINFO      ; move address of OSINFO sector to bx
+
+    ; this mess makes sure we dont modify AH, only AL
+    push ax             ; save AX temporarily
+    xor ah, ah          ; zero upper byte (we cannot add a 16 & 8 bit reg together)
     add bx, ax          ; add the offset (sector to read from) to pointer
-    
+    pop ax              ; restore AX (just AH as we will modify AL)
     mov byte al, [bx]   ; read from memory address pointed to by bx
-    xor ah, ah          ; clear AH as we dont need it
+
+    pop bx
+    ret
+
+
+
+
+
+; writes to OSINFO sector with specified sector
+; params:
+; AH - sector to set info on
+; AL - sector info to write
+setSectorInfo:
+    push bx
+
+    xor bh, bh          ; zero upper byte
+    mov bl, ah          ; move AH to BX
+    add bx, OSINFO      ; offset OSINFO ptr by BX
+
+    mov byte [bx], al   ; write to memory address pointed to by bx
 
     pop bx
     ret
